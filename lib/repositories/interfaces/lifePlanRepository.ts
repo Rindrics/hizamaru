@@ -14,6 +14,7 @@ export interface ライフプランRepository {
     説明: string | null,
     有効フラグ: boolean
   ): Promise<ライフプラン>;
+  複製(ID: string): Promise<ライフプラン>;
   メインプラン設定(アカウントID: string, メインプランID: string): Promise<void>;
   削除(ID: string): Promise<void>;
 }

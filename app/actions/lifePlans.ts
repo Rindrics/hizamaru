@@ -141,3 +141,19 @@ export async function ライフプランをメインにする(planId: string) {
     logger.error('Failed to set life plan as main', { error: message });
   }
 }
+
+export async function ライフプラン複製(id: string) {
+  try {
+    logger.debug('LifePlan: duplicate request', { planId: id });
+
+    const newPlan = await ライフプランRepo.複製(id);
+
+    logger.info('Life plan duplicated', { planId: id, newPlanId: newPlan.ID });
+
+    return { 成功: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to duplicate life plan', { error: message });
+    return { 成功: false, エラー: message };
+  }
+}

@@ -7,6 +7,7 @@
   --primary-hover: #A6808E;
   --primary-text: #ffffff;
   --error: #F28379;
+  --success: #D9D1C7;
 }
 
 @theme inline {

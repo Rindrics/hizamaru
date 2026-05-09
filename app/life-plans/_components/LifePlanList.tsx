@@ -1,17 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, Copy } from 'lucide-react';
 import type { ライフプラン } from '@/types';
 import {
   ライフプラン削除,
   ライフプランをメインにする,
+  ライフプラン複製,
 } from '@/app/actions/lifePlans';
 import FamilyMemberModal from '@/app/family/_components/FamilyMemberModal';
 import LifePlanForm from './LifePlanForm';
 import ConfirmDialog from '@/app/family/_components/ConfirmDialog';
 import { ライフプラン追加 } from '@/app/actions/lifePlans';
+import Toast from '@/app/_components/Toast';
+import { useToast } from '@/lib/hooks/useToast';
 
 interface Props {
   plans: ライフプラン[];
@@ -24,6 +27,12 @@ export default function LifePlanList({ plans }: Props) {
     name: string;
     type?: 'delete' | 'setMain';
   } | null>(null);
+  const [duplicateConfirm, setDuplicateConfirm] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [, startTransition] = useTransition();
+  const { toasts, remove, info, success } = useToast();
 
   const handleAddClose = () => {
     setIsAddOpen(false);
@@ -44,17 +53,54 @@ export default function LifePlanList({ plans }: Props) {
     }
   };
 
-  const handleConfirmExecute = async () => {
-    if (!deleteConfirm) return;
-    if (deleteConfirm.type === 'setMain') {
-      await ライフプランをメインにする(deleteConfirm.id);
-    } else {
-      await ライフプラン削除(deleteConfirm.id);
+  const handleDuplicateConfirm = (planId: string) => {
+    const plan = plans.find((p) => p.ID === planId);
+    if (plan) {
+      setDuplicateConfirm({ id: planId, name: plan.名前 });
     }
+  };
+
+  const handleDuplicateExecute = () => {
+    if (!duplicateConfirm) return;
+    const toastId = info('複製中...', 1.0);
+    startTransition(async () => {
+      const result = await ライフプラン複製(duplicateConfirm.id);
+      remove(toastId);
+      if (result?.成功) {
+        success('複製完了');
+        setTimeout(() => {
+          location.reload();
+        }, 500);
+      }
+    });
+  };
+
+  const handleConfirmExecute = () => {
+    if (!deleteConfirm) return;
+
+    const message = deleteConfirm.type === 'setMain' ? 'メインプランに設定中...' : '削除中...';
+    const toastId = info(message, 1.0);
+
+    startTransition(async () => {
+      try {
+        if (deleteConfirm.type === 'setMain') {
+          await ライフプランをメインにする(deleteConfirm.id);
+        } else {
+          await ライフプラン削除(deleteConfirm.id);
+        }
+        remove(toastId);
+        const successMessage = deleteConfirm.type === 'setMain' ? 'メインプランに設定完了' : '削除完了';
+        success(successMessage);
+        setTimeout(() => location.reload(), 500);
+      } catch (err) {
+        remove(toastId);
+      }
+    });
   };
 
   return (
     <>
+      <Toast toasts={toasts} onRemove={remove} />
       <div className="p-6 flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold text-gray-900">
           ライフプラン一覧
@@ -125,6 +171,13 @@ export default function LifePlanList({ plans }: Props) {
                         <Edit2 size={18} />
                       </Link>
                       <button
+                        onClick={() => handleDuplicateConfirm(plan.ID)}
+                        className="text-primary hover:text-primary-hover inline-block"
+                        title="複製"
+                      >
+                        <Copy size={18} />
+                      </button>
+                      <button
                         onClick={() => handleDeleteConfirm(plan.ID)}
                         className="inline-block hover:opacity-70 transition-opacity"
                         title="削除"
@@ -171,6 +224,19 @@ export default function LifePlanList({ plans }: Props) {
           setDeleteConfirm(null);
         }}
         onCancel={() => setDeleteConfirm(null)}
+      />
+
+      <ConfirmDialog
+        isOpen={!!duplicateConfirm}
+        title="ライフプランを複製しますか？"
+        message={`「${duplicateConfirm?.name}」を複製します。複製には少し時間がかかります。`}
+        confirmText="複製"
+        cancelText="キャンセル"
+        onConfirm={() => {
+          handleDuplicateExecute();
+          setDuplicateConfirm(null);
+        }}
+        onCancel={() => setDuplicateConfirm(null)}
       />
     </>
   );

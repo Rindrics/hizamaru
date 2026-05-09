@@ -117,4 +117,29 @@ export class ライフプランSupabaseRepository implements ライフプランR
 
     if (error) throw error;
   }
+
+  async 複製(ID: string): Promise<ライフプラン> {
+    const supabase = getSupabaseClient();
+    const original = await this.ID別取得(ID);
+    if (!original) {
+      throw new Error(`Life plan not found: ${ID}`);
+    }
+
+    const newId = crypto.randomUUID();
+    const { data, error } = await supabase
+      .from('life_plans')
+      .insert({
+        id: newId,
+        account_id: original.アカウントID,
+        name: `${original.名前} (コピー)`,
+        description: original.説明,
+        is_active: false,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return this.mapToEntity(data);
+  }
 }

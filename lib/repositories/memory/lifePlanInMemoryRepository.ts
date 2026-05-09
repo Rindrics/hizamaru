@@ -112,4 +112,36 @@ export class ライフプランInMemoryRepository implements ライフプランR
       seedData[accountId] = seedData[accountId].filter((p) => p.ID !== ID);
     }
   }
+
+  async 複製(ID: string): Promise<ライフプラン> {
+    let original: ライフプラン | null = null;
+    for (const plans of Object.values(seedData)) {
+      const plan = plans.find((p) => p.ID === ID);
+      if (plan) {
+        original = plan;
+        break;
+      }
+    }
+
+    if (!original) {
+      throw new Error(`Life plan not found: ${ID}`);
+    }
+
+    const newPlan: ライフプラン = {
+      ID: crypto.randomUUID(),
+      アカウントID: original.アカウントID,
+      名前: `${original.名前} (コピー)`,
+      説明: original.説明,
+      有効フラグ: false,
+      作成日: new Date(),
+      更新日: new Date(),
+    };
+
+    if (!seedData[original.アカウントID]) {
+      seedData[original.アカウントID] = [];
+    }
+
+    seedData[original.アカウントID].push(newPlan);
+    return newPlan;
+  }
 }
