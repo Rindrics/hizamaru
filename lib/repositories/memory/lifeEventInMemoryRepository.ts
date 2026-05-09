@@ -1,8 +1,4 @@
-import type {
-  ライフイベント,
-  出産イベント,
-  住宅購入イベント,
-} from '@/types';
+import type { ライフイベント, 出産イベント, 住宅購入イベント } from '@/types';
 import type { ライフイベントRepository } from '../interfaces/lifeEventRepository';
 
 const seedData: ライフイベント[] = [
@@ -33,6 +29,8 @@ export class ライフイベントInMemoryRepository implements ライフイベ�
   async ライフプランID別取得(
     ライフプランIDリスト: string[]
   ): Promise<ライフイベント[]> {
-    return seedData.filter((e) => ライフプランIDリスト.includes(e.ライフプランID));
+    return seedData.filter((e) =>
+      ライフプランIDリスト.includes(e.ライフプランID)
+    );
   }
 }
