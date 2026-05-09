@@ -1,5 +1,3 @@
-// ドメインモデル型定義
-
 export type アカウント = {
   ID: string;
   招待トークン: string;
@@ -35,10 +33,11 @@ export type ライフプラン = {
 };
 
 export type ライフイベント種別 =
-  | 'birth'
-  | 'home_purchase'
-  | 'education'
-  | 'retirement';
+  | '出産'
+  | '住宅購入'
+  | '入学'
+  | '習い事'
+  | '退職';
 
 export type ライフイベント = {
   ID: string;
