@@ -18,7 +18,7 @@ interface Props {
   action: (
     prevState: unknown,
     formData: FormData
-  ) => Promise<{ 成功?: boolean; エラー?: string }>;
+  ) => Promise<{ 成功?: boolean; エラー?: string } | null | undefined>;
   defaultValues?: 家族メンバー;
 }
 
