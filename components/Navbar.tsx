@@ -25,7 +25,7 @@ export default async function Navbar() {
                 <form action={logout}>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 text-sm font-medium text-primary-text bg-primary rounded-lg hover:bg-primary-hover"
                   >
                     ログアウト
                   </button>

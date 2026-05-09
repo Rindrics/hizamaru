@@ -16,7 +16,7 @@ export default async function Home() {
           </h1>
           <p className="text-gray-600 mb-8">
             データを表示するには
-            <a href="/login" className="text-blue-600 hover:text-blue-700">
+            <a href="/login" className="text-primary hover:opacity-90">
               ログイン
             </a>
             してください
@@ -49,7 +49,7 @@ export default async function Home() {
                   <h3 className="font-medium text-gray-900">{plan.名前}</h3>
                   <p className="text-sm text-gray-600">{plan.説明}</p>
                   {plan.有効フラグ && (
-                    <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">
+                    <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold bg-primary text-primary-text rounded">
                       メインシナリオ
                     </span>
                   )}
