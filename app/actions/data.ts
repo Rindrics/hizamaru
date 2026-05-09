@@ -62,7 +62,12 @@ export async function fetchDemoData() {
       const base = {
         ID: e.id,
         ライフプランID: e.life_plan_id,
-        イベント種別: e.event_type as 出産イベント['イベント種別'] | 住宅購入イベント['イベント種別'] | 入学イベント['イベント種別'] | 習い事イベント['イベント種別'] | 退職イベント['イベント種別'],
+        イベント種別: e.event_type as
+          | 出産イベント['イベント種別']
+          | 住宅購入イベント['イベント種別']
+          | 入学イベント['イベント種別']
+          | 習い事イベント['イベント種別']
+          | 退職イベント['イベント種別'],
         イベント年: e.event_year,
         作成日: new Date(e.created_at),
         更新日: new Date(e.updated_at),
