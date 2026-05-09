@@ -20,3 +20,10 @@ insert into auth.identities (id, provider_id, user_id, identity_data, provider, 
 -- Test user record
 insert into users (id, account_id, email, display_name, demo_mode) values
   ('550e8400-e29b-41d4-a716-446655440000', 'test-account', 'admin@example.com', 'テストユーザー', false);
+
+-- Test family members
+insert into family_members (id, account_id, name, birth_date, relationship) values
+  ('family-000', 'test-account', '本人', '1988-10-10'::date, '夫'),
+  ('family-001', 'test-account', '配偶者', '1990-05-15'::date, '妻'),
+  ('family-002', 'test-account', '子供1', '2015-03-20'::date, '長女'),
+  ('family-003', 'test-account', '子供2', '2018-07-10'::date, '次女');
