@@ -28,7 +28,10 @@ async function getAccountId(): Promise<string> {
   return userData.account_id;
 }
 
-export async function ライフプラン追加(_prevState: unknown, formData: FormData) {
+export async function ライフプラン追加(
+  _prevState: unknown,
+  formData: FormData
+) {
   try {
     const accountId = await getAccountId();
     const 名前 = formData.get('名前') as string;
@@ -62,7 +65,11 @@ export async function ライフプラン追加(_prevState: unknown, formData: Fo
   }
 }
 
-export async function ライフプラン更新(id: string, _prevState: unknown, formData: FormData) {
+export async function ライフプラン更新(
+  id: string,
+  _prevState: unknown,
+  formData: FormData
+) {
   try {
     const 名前 = formData.get('名前') as string;
     const 説明 = (formData.get('説明') as string) || null;

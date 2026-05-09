@@ -4,7 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Edit2, Trash2 } from 'lucide-react';
 import type { ライフプラン } from '@/types';
-import { ライフプラン削除, ライフプランをメインにする } from '@/app/actions/lifePlans';
+import {
+  ライフプラン削除,
+  ライフプランをメインにする,
+} from '@/app/actions/lifePlans';
 import FamilyMemberModal from '@/app/family/_components/FamilyMemberModal';
 import LifePlanForm from './LifePlanForm';
 import ConfirmDialog from '@/app/family/_components/ConfirmDialog';
@@ -16,7 +19,11 @@ interface Props {
 
 export default function LifePlanList({ plans }: Props) {
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string; type?: 'delete' | 'setMain' } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    id: string;
+    name: string;
+    type?: 'delete' | 'setMain';
+  } | null>(null);
 
   const handleAddClose = () => {
     setIsAddOpen(false);
@@ -49,7 +56,9 @@ export default function LifePlanList({ plans }: Props) {
   return (
     <>
       <div className="p-6 flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">ライフプラン一覧</h3>
+        <h3 className="text-lg font-semibold text-gray-900">
+          ライフプラン一覧
+        </h3>
         <button
           onClick={() => setIsAddOpen(true)}
           className="bg-primary text-primary-text px-4 py-2 rounded-md hover:bg-primary-hover"
@@ -142,13 +151,19 @@ export default function LifePlanList({ plans }: Props) {
 
       <ConfirmDialog
         isOpen={!!deleteConfirm}
-        title={deleteConfirm?.type === 'setMain' ? 'メインプランに設定しますか？' : '削除してよろしいですか？'}
+        title={
+          deleteConfirm?.type === 'setMain'
+            ? 'メインプランに設定しますか？'
+            : '削除してよろしいですか？'
+        }
         message={
           deleteConfirm?.type === 'setMain'
             ? `「${deleteConfirm?.name}」をメインプランに設定します。`
             : `「${deleteConfirm?.name}」を削除します。この操作は取り消せません。`
         }
-        confirmText={deleteConfirm?.type === 'setMain' ? 'メインプランに設定' : '削除'}
+        confirmText={
+          deleteConfirm?.type === 'setMain' ? 'メインプランに設定' : '削除'
+        }
         cancelText="キャンセル"
         isDangerous={deleteConfirm?.type === 'delete'}
         onConfirm={() => {

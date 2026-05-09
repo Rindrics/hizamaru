@@ -40,7 +40,11 @@ export class ライフプランSupabaseRepository implements ライフプランR
     return data ? this.mapToEntity(data) : null;
   }
 
-  async 作成(アカウントID: string, 名前: string, 説明: string | null): Promise<ライフプラン> {
+  async 作成(
+    アカウントID: string,
+    名前: string,
+    説明: string | null
+  ): Promise<ライフプラン> {
     const supabase = getSupabaseClient();
     const id = crypto.randomUUID();
     const { data, error } = await supabase
@@ -60,7 +64,12 @@ export class ライフプランSupabaseRepository implements ライフプランR
     return this.mapToEntity(data);
   }
 
-  async 更新(ID: string, 名前: string, 説明: string | null, 有効フラグ: boolean): Promise<ライフプラン> {
+  async 更新(
+    ID: string,
+    名前: string,
+    説明: string | null,
+    有効フラグ: boolean
+  ): Promise<ライフプラン> {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('life_plans')
@@ -79,7 +88,10 @@ export class ライフプランSupabaseRepository implements ライフプランR
     return this.mapToEntity(data);
   }
 
-  async メインプラン設定(アカウントID: string, メインプランID: string): Promise<void> {
+  async メインプラン設定(
+    アカウントID: string,
+    メインプランID: string
+  ): Promise<void> {
     const supabase = getSupabaseClient();
 
     // Disable all plans in this account
@@ -101,10 +113,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
 
   async 削除(ID: string): Promise<void> {
     const supabase = getSupabaseClient();
-    const { error } = await supabase
-      .from('life_plans')
-      .delete()
-      .eq('id', ID);
+    const { error } = await supabase.from('life_plans').delete().eq('id', ID);
 
     if (error) throw error;
   }

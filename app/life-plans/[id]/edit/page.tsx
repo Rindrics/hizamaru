@@ -43,7 +43,10 @@ export default async function EditLifePlanPage({ params }: Props) {
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <Link href="/life-plans" className="text-primary hover:text-primary-hover">
+          <Link
+            href="/life-plans"
+            className="text-primary hover:text-primary-hover"
+          >
             ← 一覧に戻る
           </Link>
         </div>

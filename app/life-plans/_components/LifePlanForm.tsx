@@ -4,7 +4,10 @@ import { useActionState } from 'react';
 import type { ライフプラン } from '@/types';
 
 interface Props {
-  action: (prevState: unknown, formData: FormData) => Promise<{ 成功?: boolean; エラー?: string } | null | undefined>;
+  action: (
+    prevState: unknown,
+    formData: FormData
+  ) => Promise<{ 成功?: boolean; エラー?: string } | null | undefined>;
   defaultValues?: ライフプラン;
 }
 
@@ -34,7 +37,10 @@ export default function LifePlanForm({ action, defaultValues }: Props) {
       )}
 
       <div>
-        <label htmlFor="名前" className="block text-sm font-medium text-gray-900">
+        <label
+          htmlFor="名前"
+          className="block text-sm font-medium text-gray-900"
+        >
           ライフプラン名
         </label>
         <input
@@ -49,7 +55,10 @@ export default function LifePlanForm({ action, defaultValues }: Props) {
       </div>
 
       <div>
-        <label htmlFor="説明" className="block text-sm font-medium text-gray-900">
+        <label
+          htmlFor="説明"
+          className="block text-sm font-medium text-gray-900"
+        >
           説明
         </label>
         <textarea
@@ -72,7 +81,10 @@ export default function LifePlanForm({ action, defaultValues }: Props) {
             disabled={isPending}
             className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
           />
-          <label htmlFor="有効フラグ" className="ml-2 text-sm font-medium text-gray-900">
+          <label
+            htmlFor="有効フラグ"
+            className="ml-2 text-sm font-medium text-gray-900"
+          >
             メインプランに設定
           </label>
         </div>

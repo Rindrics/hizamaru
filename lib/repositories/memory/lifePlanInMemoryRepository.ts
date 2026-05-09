@@ -37,7 +37,11 @@ export class ライフプランInMemoryRepository implements ライフプランR
     return null;
   }
 
-  async 作成(アカウントID: string, 名前: string, 説明: string | null): Promise<ライフプラン> {
+  async 作成(
+    アカウントID: string,
+    名前: string,
+    説明: string | null
+  ): Promise<ライフプラン> {
     if (!seedData[アカウントID]) {
       seedData[アカウントID] = [];
     }
@@ -56,7 +60,12 @@ export class ライフプランInMemoryRepository implements ライフプランR
     return newPlan;
   }
 
-  async 更新(ID: string, 名前: string, 説明: string | null, 有効フラグ: boolean): Promise<ライフプラン> {
+  async 更新(
+    ID: string,
+    名前: string,
+    説明: string | null,
+    有効フラグ: boolean
+  ): Promise<ライフプラン> {
     for (const plans of Object.values(seedData)) {
       const index = plans.findIndex((p) => p.ID === ID);
       if (index !== -1) {
@@ -74,7 +83,10 @@ export class ライフプランInMemoryRepository implements ライフプランR
     throw new Error(`Life plan not found: ${ID}`);
   }
 
-  async メインプラン設定(アカウントID: string, メインプランID: string): Promise<void> {
+  async メインプラン設定(
+    アカウントID: string,
+    メインプランID: string
+  ): Promise<void> {
     if (!seedData[アカウントID]) return;
 
     // Disable all plans in this account
@@ -84,7 +96,9 @@ export class ライフプランInMemoryRepository implements ライフプランR
     }));
 
     // Enable the specified plan
-    const index = seedData[アカウントID].findIndex((p) => p.ID === メインプランID);
+    const index = seedData[アカウントID].findIndex(
+      (p) => p.ID === メインプランID
+    );
     if (index !== -1) {
       seedData[アカウントID][index] = {
         ...seedData[アカウントID][index],
