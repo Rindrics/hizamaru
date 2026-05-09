@@ -27,3 +27,7 @@ insert into family_members (id, account_id, name, birth_date, relationship) valu
   ('family-001', 'test-account', '配偶者', '1990-05-15'::date, '妻'),
   ('family-002', 'test-account', '子供1', '2015-03-20'::date, '長女'),
   ('family-003', 'test-account', '子供2', '2018-07-10'::date, '次女');
+
+-- Test life plan
+insert into life_plans (id, account_id, name, description, is_active) values
+  ('plan-001', 'test-account', 'メインプラン', '家族全員の基本ライフプラン', true);

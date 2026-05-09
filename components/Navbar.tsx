@@ -37,12 +37,20 @@ export default function Navbar({ user }: { user: User | null }) {
 
           <div className="flex items-center gap-4">
             {user && (
-              <Link
-                href="/family"
-                className="text-sm text-gray-700 hover:text-primary"
-              >
-                家族
-              </Link>
+              <>
+                <Link
+                  href="/life-plans"
+                  className="text-sm text-gray-700 hover:text-primary"
+                >
+                  ライフプラン
+                </Link>
+                <Link
+                  href="/family"
+                  className="text-sm text-gray-700 hover:text-primary"
+                >
+                  家族
+                </Link>
+              </>
             )}
             {user && (
               <div className="relative" ref={dropdownRef}>
