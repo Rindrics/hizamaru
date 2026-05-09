@@ -21,7 +21,14 @@ export function useToast() {
       status?: 'processing' | 'completed'
     ) => {
       const id = Math.random().toString(36).substr(2, 9);
-      const toast: ToastMessage = { id, message, type, status, duration, minDuration };
+      const toast: ToastMessage = {
+        id,
+        message,
+        type,
+        status,
+        duration,
+        minDuration,
+      };
       setToasts((prev) => [...prev, toast]);
       return id;
     },
@@ -33,20 +40,50 @@ export function useToast() {
   }, []);
 
   const success = useCallback(
-    (message: string, minDurationSeconds?: number, status?: 'processing' | 'completed') =>
-      add(message, 'success', status === 'completed' ? 2500 : 3000, minDurationSeconds || 0, status),
+    (
+      message: string,
+      minDurationSeconds?: number,
+      status?: 'processing' | 'completed'
+    ) =>
+      add(
+        message,
+        'success',
+        status === 'completed' ? 2500 : 3000,
+        minDurationSeconds || 0,
+        status
+      ),
     [add]
   );
 
   const error = useCallback(
-    (message: string, minDurationSeconds?: number, status?: 'processing' | 'completed') =>
-      add(message, 'error', status === 'completed' ? 2500 : 3000, minDurationSeconds || 0, status),
+    (
+      message: string,
+      minDurationSeconds?: number,
+      status?: 'processing' | 'completed'
+    ) =>
+      add(
+        message,
+        'error',
+        status === 'completed' ? 2500 : 3000,
+        minDurationSeconds || 0,
+        status
+      ),
     [add]
   );
 
   const info = useCallback(
-    (message: string, minDurationSeconds?: number, status?: 'processing' | 'completed') =>
-      add(message, 'info', status === 'processing' ? 1500 : 3000, minDurationSeconds || 0, status),
+    (
+      message: string,
+      minDurationSeconds?: number,
+      status?: 'processing' | 'completed'
+    ) =>
+      add(
+        message,
+        'info',
+        status === 'processing' ? 1500 : 3000,
+        minDurationSeconds || 0,
+        status
+      ),
     [add]
   );
 

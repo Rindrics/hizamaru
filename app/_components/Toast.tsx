@@ -72,14 +72,19 @@ function ToastItem({ toast, onRemove, index, totalCount }: ToastItemProps) {
       ? 'text-gray-900'
       : 'text-white';
 
-  const scaleClass = toast.type === 'success' ? (isExiting ? 'scale-95' : 'scale-100') : '';
+  const scaleClass =
+    toast.type === 'success' ? (isExiting ? 'scale-95' : 'scale-100') : '';
 
   const isNewest = index === totalCount - 1;
   const isStacked = totalCount > 1 && index < totalCount - 1;
 
   const translateClass = isNewest
-    ? isExiting ? 'translate-y-0' : 'translate-y-full'
-    : isStacked ? '-translate-y-1' : 'translate-y-0';
+    ? isExiting
+      ? 'translate-y-0'
+      : 'translate-y-full'
+    : isStacked
+      ? '-translate-y-1'
+      : 'translate-y-0';
 
   return (
     <div
