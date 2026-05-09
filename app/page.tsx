@@ -1,5 +1,6 @@
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 import { fetchDemoData, fetchUserData } from '@/app/actions/data';
+import type { 家族メンバー, ライフプラン, ライフイベント } from '@/types';
 
 async function DataDisplay({ showDemo }: { showDemo: boolean }) {
   const supabase = await getSupabaseServerClient();
@@ -26,7 +27,9 @@ async function DataDisplay({ showDemo }: { showDemo: boolean }) {
     );
   }
 
-  let familyMembers, lifePlans, lifeEvents;
+  let familyMembers: 家族メンバー[] = [];
+  let lifePlans: ライフプラン[] = [];
+  let lifeEvents: ライフイベント[] = [];
 
   if (showDemo) {
     const data = await fetchDemoData();
