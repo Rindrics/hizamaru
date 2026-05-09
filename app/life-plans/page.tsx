@@ -4,6 +4,8 @@ import { ライフプランRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
 import LifePlanList from './_components/LifePlanList';
 
+export const revalidate = 0;
+
 export default async function LifePlansPage() {
   const supabase = await getSupabaseServerClient();
   const {
@@ -19,7 +21,7 @@ export default async function LifePlansPage() {
 
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('*')
+    .select('*', { count: 'exact' })
     .eq('id', user.id.toString());
 
   logger.debug('LifePlansPage: user data fetch', {

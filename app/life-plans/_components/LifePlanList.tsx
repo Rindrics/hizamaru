@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Edit2, Trash2, Copy } from 'lucide-react';
@@ -9,6 +9,7 @@ import {
   ライフプラン削除,
   ライフプランをメインにする,
   ライフプラン複製,
+  ライフプラン一覧取得,
 } from '@/app/actions/lifePlans';
 import FamilyMemberModal from '@/app/family/_components/FamilyMemberModal';
 import LifePlanForm from './LifePlanForm';
@@ -21,7 +22,8 @@ interface Props {
   plans: ライフプラン[];
 }
 
-export default function LifePlanList({ plans }: Props) {
+export default function LifePlanList({ plans: initialPlans }: Props) {
+  const [displayPlans, setDisplayPlans] = useState<ライフプラン[] | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     id: string;
@@ -32,9 +34,14 @@ export default function LifePlanList({ plans }: Props) {
     id: string;
     name: string;
   } | null>(null);
+  const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [, startTransition] = useTransition();
   const { toasts, remove, info, success } = useToast();
   const router = useRouter();
+
+  // リロード直後はソート済みを使い、操作後はソート前の順序を保つ
+  const plansToDisplay = displayPlans || [...initialPlans].sort((a, b) => (b.有効フラグ ? 1 : 0) - (a.有効フラグ ? 1 : 0));
 
   const handleAddClose = () => {
     setIsAddOpen(false);
@@ -49,14 +56,14 @@ export default function LifePlanList({ plans }: Props) {
   };
 
   const handleDeleteConfirm = (planId: string) => {
-    const plan = plans.find((p) => p.ID === planId);
+    const plan = plansToDisplay.find((p) => p.ID === planId);
     if (plan) {
       setDeleteConfirm({ id: planId, name: plan.名前, type: 'delete' });
     }
   };
 
   const handleDuplicateConfirm = (planId: string) => {
-    const plan = plans.find((p) => p.ID === planId);
+    const plan = plansToDisplay.find((p) => p.ID === planId);
     if (plan) {
       setDuplicateConfirm({ id: planId, name: plan.名前 });
     }
@@ -75,32 +82,29 @@ export default function LifePlanList({ plans }: Props) {
     });
   };
 
-  const handleConfirmExecute = () => {
+  const handleConfirmExecute = async () => {
     if (!deleteConfirm) return;
 
-    const message =
-      deleteConfirm.type === 'setMain'
-        ? 'メインプランに設定中...'
-        : '削除中...';
-    info(message, 1.0, 'processing');
-
-    startTransition(async () => {
-      try {
-        if (deleteConfirm.type === 'setMain') {
-          await ライフプランをメインにする(deleteConfirm.id);
-        } else {
-          await ライフプラン削除(deleteConfirm.id);
-        }
-        const successMessage =
-          deleteConfirm.type === 'setMain'
-            ? 'メインプランに設定完了'
-            : '削除完了';
-        success(successMessage, 1.0, 'completed');
-        setTimeout(() => router.refresh(), 2500);
-      } catch (err) {
-        //
+    setIsLoading(true);
+    try {
+      if (deleteConfirm.type === 'setMain') {
+        setHighlightedPlanId(deleteConfirm.id);
+        await ライフプランをメインにする(deleteConfirm.id);
+      } else {
+        info('削除中...', 1.0, 'processing');
+        await ライフプラン削除(deleteConfirm.id);
+        success('削除完了', 1.0, 'completed');
       }
-    });
+      // Fetch fresh data after the DB update.
+      const updatedPlans = await ライフプラン一覧取得();
+      setDisplayPlans(updatedPlans);
+      setHighlightedPlanId(null);
+    } catch (err) {
+      console.error('Error:', err);
+    } finally {
+      setIsLoading(false);
+      setDeleteConfirm(null);
+    }
   };
 
   return (
@@ -118,7 +122,7 @@ export default function LifePlanList({ plans }: Props) {
         </button>
       </div>
       <div className="px-6 pb-6">
-        {plans.length === 0 ? (
+        {plansToDisplay.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             ライフプランが作成されていません
           </div>
@@ -141,9 +145,16 @@ export default function LifePlanList({ plans }: Props) {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
-                {plans.map((plan) => (
-                  <tr key={plan.ID} className="hover:bg-gray-50">
+              <tbody className={`divide-y divide-gray-200 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
+                {plansToDisplay.map((plan) => (
+                  <tr
+                    key={plan.ID}
+                    className={`transition-all duration-500 ${
+                      highlightedPlanId === plan.ID
+                        ? 'bg-blue-50 drop-shadow-md'
+                        : 'hover:bg-gray-50'
+                    }`}
+                  >
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {plan.名前}
                     </td>
@@ -156,6 +167,7 @@ export default function LifePlanList({ plans }: Props) {
                         name="main-plan"
                         value={plan.ID}
                         checked={plan.有効フラグ}
+                        autoComplete="off"
                         onChange={() => {
                           if (plan.有効フラグ) return;
                           setDeleteConfirm({
@@ -226,7 +238,6 @@ export default function LifePlanList({ plans }: Props) {
         isDangerous={deleteConfirm?.type === 'delete'}
         onConfirm={() => {
           handleConfirmExecute();
-          setDeleteConfirm(null);
         }}
         onCancel={() => setDeleteConfirm(null)}
       />

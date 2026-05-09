@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 import { ライフプランRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
@@ -115,10 +116,15 @@ export async function ライフプラン削除(id: string) {
 
     logger.info('Life plan deleted', { planId: id });
 
+    const accountId = await getAccountId();
+    const updatedPlans = await ライフプランRepo.アカウント別取得(accountId);
     revalidatePath('/life-plans');
+
+    return updatedPlans;
   } catch (err) {
     const message = err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to delete life plan', { error: message });
+    throw err;
   }
 }
 
@@ -132,10 +138,14 @@ export async function ライフプランをメインにする(planId: string) {
 
     logger.info('Life plan set as main', { planId, accountId });
 
+    const updatedPlans = await ライフプランRepo.アカウント別取得(accountId);
     revalidatePath('/life-plans');
+
+    return updatedPlans;
   } catch (err) {
     const message = err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to set life plan as main', { error: message });
+    throw err;
   }
 }
 
@@ -152,5 +162,17 @@ export async function ライフプラン複製(id: string) {
     const message = err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to duplicate life plan', { error: message });
     return { 成功: false, エラー: message };
+  }
+}
+
+export async function ライフプラン一覧取得() {
+  try {
+    const accountId = await getAccountId();
+    const plans = await ライフプランRepo.アカウント別取得(accountId);
+    return plans;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to fetch life plans', { error: message });
+    throw err;
   }
 }
