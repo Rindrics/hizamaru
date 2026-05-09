@@ -6,7 +6,9 @@ interface MortgageInput {
   loanTermYears: number;
 }
 
-export function calculateMortgageSchedule(input: MortgageInput): MortgagePayment[] {
+export function calculateMortgageSchedule(
+  input: MortgageInput
+): MortgagePayment[] {
   const { loanAmount, annualInterestRate, loanTermYears } = input;
   const monthlyRate = annualInterestRate / 12;
   const totalMonths = loanTermYears * 12;

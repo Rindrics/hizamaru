@@ -34,7 +34,11 @@ export type LifePlan = {
   updatedAt: Date;
 };
 
-export type LifeEventType = 'birth' | 'home_purchase' | 'education' | 'retirement';
+export type LifeEventType =
+  | 'birth'
+  | 'home_purchase'
+  | 'education'
+  | 'retirement';
 
 export type LifeEvent = {
   id: string;
@@ -130,4 +134,6 @@ export type MortgagePayment = {
 };
 
 // API Response Type
-export type ActionResult<T> = { success: true; data: T } | { success: false; error: string };
+export type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };

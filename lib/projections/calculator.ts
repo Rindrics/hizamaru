@@ -7,7 +7,9 @@ interface CalculatorInput {
   years: number;
 }
 
-export function calculateYearlyProjections(input: CalculatorInput): YearlyProjection[] {
+export function calculateYearlyProjections(
+  input: CalculatorInput
+): YearlyProjection[] {
   const { initialAsset, monthlyIncome, investmentRate, years } = input;
   const projections: YearlyProjection[] = [];
 
