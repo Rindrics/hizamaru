@@ -15,7 +15,11 @@ export default async function Home() {
             ようこそ、hizamaru へ
           </h1>
           <p className="text-gray-600 mb-8">
-            データを表示するには<a href="/login" className="text-blue-600 hover:text-blue-700">ログイン</a>してください
+            データを表示するには
+            <a href="/login" className="text-blue-600 hover:text-blue-700">
+              ログイン
+            </a>
+            してください
           </p>
         </main>
       </div>
