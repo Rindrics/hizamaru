@@ -6,6 +6,7 @@
   --primary: #c8a1a8;
   --primary-hover: #A6808E;
   --primary-text: #ffffff;
+  --error: #F28379;
 }
 
 @theme inline {
@@ -54,5 +55,17 @@ body {
 
   .text-primary-text {
     @apply [color:var(--primary-text)];
+  }
+
+  .bg-error {
+    background-color: var(--error);
+  }
+
+  .text-error {
+    color: var(--error);
+  }
+
+  .border-error {
+    border-color: var(--error);
   }
 }
