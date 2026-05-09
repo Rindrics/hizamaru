@@ -17,7 +17,10 @@ interface Props {
 
 export default function FamilyMemberList({ members }: Props) {
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('ja-JP');
@@ -27,7 +30,10 @@ export default function FamilyMemberList({ members }: Props) {
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
       age--;
     }
     return age;
@@ -140,9 +146,7 @@ export default function FamilyMemberList({ members }: Props) {
         onClose={handleAddClose}
         title="家族メンバーを追加"
       >
-        <FamilyMemberForm
-          action={addActionWithState}
-        />
+        <FamilyMemberForm action={addActionWithState} />
       </FamilyMemberModal>
 
       <ConfirmDialog

@@ -43,7 +43,12 @@ export class 家族メンバーInMemoryRepository implements 家族メンバーR
     return null;
   }
 
-  async 作成(アカウントID: string, 名前: string, 生年月日: Date, 続柄: 家族メンバー続柄): Promise<家族メンバー> {
+  async 作成(
+    アカウントID: string,
+    名前: string,
+    生年月日: Date,
+    続柄: 家族メンバー続柄
+  ): Promise<家族メンバー> {
     const id = crypto.randomUUID();
     const newMember: 家族メンバー = {
       ID: id,
@@ -60,7 +65,12 @@ export class 家族メンバーInMemoryRepository implements 家族メンバーR
     return newMember;
   }
 
-  async 更新(ID: string, 名前: string, 生年月日: Date, 続柄: 家族メンバー続柄): Promise<家族メンバー> {
+  async 更新(
+    ID: string,
+    名前: string,
+    生年月日: Date,
+    続柄: 家族メンバー続柄
+  ): Promise<家族メンバー> {
     for (const members of Object.values(seedData)) {
       const index = members.findIndex((m) => m.ID === ID);
       if (index !== -1) {

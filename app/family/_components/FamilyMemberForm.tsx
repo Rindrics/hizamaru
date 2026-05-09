@@ -15,16 +15,25 @@ const 続柄オプション: 家族メンバー続柄[] = [
 ];
 
 interface Props {
-  action: (prevState: unknown, formData: FormData) => Promise<{ 成功?: boolean; エラー?: string }>;
+  action: (
+    prevState: unknown,
+    formData: FormData
+  ) => Promise<{ 成功?: boolean; エラー?: string }>;
   defaultValues?: 家族メンバー;
 }
 
 export default function FamilyMemberForm({ action, defaultValues }: Props) {
   const [state, formAction, isPending] = useActionState(action, null);
   const currentYear = new Date().getFullYear();
-  const [year, setYear] = useState(defaultValues?.生年月日.getFullYear().toString() || '');
-  const [month, setMonth] = useState(String(defaultValues?.生年月日.getMonth() + 1 || '').padStart(2, '0'));
-  const [day, setDay] = useState(String(defaultValues?.生年月日.getDate() || '').padStart(2, '0'));
+  const [year, setYear] = useState(
+    defaultValues?.生年月日.getFullYear().toString() || ''
+  );
+  const [month, setMonth] = useState(
+    String(defaultValues?.生年月日.getMonth() + 1 || '').padStart(2, '0')
+  );
+  const [day, setDay] = useState(
+    String(defaultValues?.生年月日.getDate() || '').padStart(2, '0')
+  );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     if (!year || !month || !day) {
@@ -43,13 +52,23 @@ export default function FamilyMemberForm({ action, defaultValues }: Props) {
   return (
     <form action={formAction} className="space-y-6" onSubmit={handleSubmit}>
       {state?.エラー && (
-        <div className="p-4 rounded-md" style={{ backgroundColor: 'rgba(242, 131, 121, 0.1)', borderColor: 'var(--error)', borderWidth: '1px' }}>
+        <div
+          className="p-4 rounded-md"
+          style={{
+            backgroundColor: 'rgba(242, 131, 121, 0.1)',
+            borderColor: 'var(--error)',
+            borderWidth: '1px',
+          }}
+        >
           <p className="text-sm text-error">{state.エラー}</p>
         </div>
       )}
 
       <div>
-        <label htmlFor="名前" className="block text-sm font-medium text-gray-900">
+        <label
+          htmlFor="名前"
+          className="block text-sm font-medium text-gray-900"
+        >
           名前
         </label>
         <input
@@ -146,7 +165,10 @@ export default function FamilyMemberForm({ action, defaultValues }: Props) {
       </div>
 
       <div>
-        <label htmlFor="続柄" className="block text-sm font-medium text-gray-900">
+        <label
+          htmlFor="続柄"
+          className="block text-sm font-medium text-gray-900"
+        >
           続柄
         </label>
         <select

@@ -43,7 +43,10 @@ export default async function EditFamilyMemberPage({ params }: Props) {
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <Link href="/family" className="text-primary hover:text-primary-hover">
+          <Link
+            href="/family"
+            className="text-primary hover:text-primary-hover"
+          >
             ← 一覧に戻る
           </Link>
         </div>
@@ -53,10 +56,7 @@ export default async function EditFamilyMemberPage({ params }: Props) {
             家族メンバー「{member.名前}」を編集
           </h1>
 
-          <FamilyMemberForm
-            action={actionWithId}
-            defaultValues={member}
-          />
+          <FamilyMemberForm action={actionWithId} defaultValues={member} />
         </div>
       </main>
     </div>

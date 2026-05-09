@@ -29,7 +29,10 @@ async function getAccountId(): Promise<string> {
   return userData.account_id;
 }
 
-export async function 家族メンバー追加(_prevState: unknown, formData: FormData) {
+export async function 家族メンバー追加(
+  _prevState: unknown,
+  formData: FormData
+) {
   try {
     const accountId = await getAccountId();
     const 名前 = formData.get('名前') as string;
@@ -66,7 +69,11 @@ export async function 家族メンバー追加(_prevState: unknown, formData: Fo
   }
 }
 
-export async function 家族メンバー更新(id: string, _prevState: unknown, formData: FormData) {
+export async function 家族メンバー更新(
+  id: string,
+  _prevState: unknown,
+  formData: FormData
+) {
   try {
     const accountId = await getAccountId();
     const existing = await 家族メンバーRepo.ID別取得(id);

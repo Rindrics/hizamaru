@@ -39,7 +39,12 @@ export class 家族メンバーSupabaseRepository implements 家族メンバーR
     return data ? this.mapToEntity(data) : null;
   }
 
-  async 作成(アカウントID: string, 名前: string, 生年月日: Date, 続柄: 家族メンバー続柄): Promise<家族メンバー> {
+  async 作成(
+    アカウントID: string,
+    名前: string,
+    生年月日: Date,
+    続柄: 家族メンバー続柄
+  ): Promise<家族メンバー> {
     const supabase = getSupabaseClient();
     const id = crypto.randomUUID();
     const { data, error } = await supabase
@@ -59,7 +64,12 @@ export class 家族メンバーSupabaseRepository implements 家族メンバーR
     return this.mapToEntity(data);
   }
 
-  async 更新(ID: string, 名前: string, 生年月日: Date, 続柄: 家族メンバー続柄): Promise<家族メンバー> {
+  async 更新(
+    ID: string,
+    名前: string,
+    生年月日: Date,
+    続柄: 家族メンバー続柄
+  ): Promise<家族メンバー> {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('family_members')

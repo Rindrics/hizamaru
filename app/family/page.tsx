@@ -28,7 +28,7 @@ export default async function FamilyPage() {
     hasUserData: !!userData,
     dataLength: Array.isArray(userData) ? userData.length : 0,
     userError: userError?.message,
-    rawData: userData
+    rawData: userData,
   });
 
   const userRecord = Array.isArray(userData) ? userData[0] : userData;
@@ -36,7 +36,7 @@ export default async function FamilyPage() {
   if (!userRecord || userError) {
     logger.error('FamilyPage: user data not found', {
       userId: user.id,
-      userError: userError?.message
+      userError: userError?.message,
     });
     redirect('/login');
   }
