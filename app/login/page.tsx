@@ -13,11 +13,16 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow">
-        <h1 className="text-2xl font-bold mb-8 text-black">ログイン情報を入力</h1>
+        <h1 className="text-2xl font-bold mb-8 text-black">
+          ログイン情報を入力
+        </h1>
 
         <form action={formAction} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1 text-black">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium mb-1 text-black"
+            >
               メールアドレス
             </label>
             <input
@@ -31,7 +36,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1 text-black">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1 text-black"
+            >
               パスワード
             </label>
             <input

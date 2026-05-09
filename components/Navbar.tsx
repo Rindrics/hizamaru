@@ -4,7 +4,9 @@ import { logout } from '@/app/actions/auth';
 
 export default async function Navbar() {
   const supabase = await getSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <nav className="border-b border-gray-200 bg-white sticky top-0 z-50">
@@ -19,9 +21,7 @@ export default async function Navbar() {
           <div className="flex items-center gap-4">
             {user ? (
               <>
-                <span className="text-sm text-gray-700">
-                  {user.email}
-                </span>
+                <span className="text-sm text-gray-700">{user.email}</span>
                 <form action={logout}>
                   <button
                     type="submit"
