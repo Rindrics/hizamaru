@@ -54,7 +54,7 @@ const sampleLifeEvents: ライフイベント[] = [
     ID: 'event-1',
     ライフプランID: 'plan-1',
     イベント種別: '出産',
-    イベント年: 2025,
+    イベント年: 2020,
     作成日: new Date(),
     更新日: new Date(),
     家族メンバーID: 'amaterasu',
