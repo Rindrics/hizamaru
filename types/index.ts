@@ -10,6 +10,7 @@ export type ユーザー = {
   アカウントID: string;
   メール: string;
   表示名: string | null;
+  デモモード: boolean;
   作成日: Date;
 };
 
