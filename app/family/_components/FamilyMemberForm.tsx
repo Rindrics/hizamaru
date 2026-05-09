@@ -26,13 +26,13 @@ export default function FamilyMemberForm({ action, defaultValues }: Props) {
   const [state, formAction, isPending] = useActionState(action, null);
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(
-    defaultValues?.生年月日.getFullYear().toString() || ''
+    defaultValues?.生年月日?.getFullYear().toString() || ''
   );
   const [month, setMonth] = useState(
-    String(defaultValues?.生年月日.getMonth() + 1 || '').padStart(2, '0')
+    String((defaultValues?.生年月日?.getMonth() ?? -1) + 1).padStart(2, '0')
   );
   const [day, setDay] = useState(
-    String(defaultValues?.生年月日.getDate() || '').padStart(2, '0')
+    String(defaultValues?.生年月日?.getDate() ?? 0).padStart(2, '0')
   );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

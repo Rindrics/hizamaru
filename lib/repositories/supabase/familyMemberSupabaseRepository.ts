@@ -5,12 +5,12 @@ import { getSupabaseClient } from '@/lib/supabase';
 export class 家族メンバーSupabaseRepository implements 家族メンバーRepository {
   private mapToEntity(m: Record<string, unknown>): 家族メンバー {
     return {
-      ID: m.id,
-      アカウントID: m.account_id,
-      名前: m.name,
-      生年月日: new Date(m.birth_date),
-      続柄: m.relationship,
-      作成日: new Date(m.created_at),
+      ID: m.id as string,
+      アカウントID: m.account_id as string,
+      名前: m.name as string,
+      生年月日: new Date(m.birth_date as string),
+      続柄: m.relationship as 家族メンバー続柄,
+      作成日: new Date(m.created_at as string),
     };
   }
 
