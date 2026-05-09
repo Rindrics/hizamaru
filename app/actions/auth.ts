@@ -26,26 +26,24 @@ export async function login(formData: FormData) {
     // Create account for new user
     const accountId = crypto.randomUUID();
 
-    const { error: accountError } = await supabase
-      .from('accounts')
-      .insert({
-        id: accountId,
-        invite_token: '',
-        invite_token_expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      });
+    const { error: accountError } = await supabase.from('accounts').insert({
+      id: accountId,
+      invite_token: '',
+      invite_token_expires_at: new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000
+      ).toISOString(),
+    });
 
     if (accountError) {
       return { error: 'Failed to initialize user account' };
     }
 
     // Create user record
-    const { error: createUserError } = await supabase
-      .from('users')
-      .insert({
-        id: data.user!.id.toString(),
-        account_id: accountId,
-        email: data.user!.email,
-      });
+    const { error: createUserError } = await supabase.from('users').insert({
+      id: data.user!.id.toString(),
+      account_id: accountId,
+      email: data.user!.email,
+    });
 
     if (createUserError) {
       return { error: 'Failed to create user record' };
