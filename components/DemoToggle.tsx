@@ -2,24 +2,18 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { updateUserDemoMode } from '@/app/actions/auth';
-import { useCallback, useState } from 'react';
+import { useTransition } from 'react';
 
 export default function DemoToggle({ user }: { user: { id: string } | null }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const isDemo = searchParams.get('demo') === '1';
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  const toggleDemo = useCallback(async () => {
-    setIsPending(true);
+  const toggleDemo = () => {
     const newDemoMode = !isDemo;
 
-    // Update server state if user is logged in
-    if (user) {
-      await updateUserDemoMode(newDemoMode);
-    }
-
-    // Update URL
+    // Update URL immediately (optimistic update)
     const params = new URLSearchParams(searchParams);
     if (newDemoMode) {
       params.set('demo', '1');
@@ -27,8 +21,14 @@ export default function DemoToggle({ user }: { user: { id: string } | null }) {
       params.delete('demo');
     }
     router.push(`?${params.toString()}`);
-    setIsPending(false);
-  }, [isDemo, searchParams, router, user]);
+
+    // Update server state in background
+    if (user) {
+      startTransition(async () => {
+        await updateUserDemoMode(newDemoMode);
+      });
+    }
+  };
 
   return (
     <button
