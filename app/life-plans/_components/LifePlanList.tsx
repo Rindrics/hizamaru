@@ -78,7 +78,10 @@ export default function LifePlanList({ plans }: Props) {
   const handleConfirmExecute = () => {
     if (!deleteConfirm) return;
 
-    const message = deleteConfirm.type === 'setMain' ? 'メインプランに設定中...' : '削除中...';
+    const message =
+      deleteConfirm.type === 'setMain'
+        ? 'メインプランに設定中...'
+        : '削除中...';
     const toastId = info(message, 1.0);
 
     startTransition(async () => {
@@ -89,7 +92,10 @@ export default function LifePlanList({ plans }: Props) {
           await ライフプラン削除(deleteConfirm.id);
         }
         remove(toastId);
-        const successMessage = deleteConfirm.type === 'setMain' ? 'メインプランに設定完了' : '削除完了';
+        const successMessage =
+          deleteConfirm.type === 'setMain'
+            ? 'メインプランに設定完了'
+            : '削除完了';
         success(successMessage);
         setTimeout(() => location.reload(), 500);
       } catch (err) {

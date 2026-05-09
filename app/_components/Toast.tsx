@@ -20,11 +20,7 @@ export default function Toast({ toasts, onRemove }: Props) {
   return (
     <div className="fixed bottom-4 right-4 z-50 space-y-3">
       {toasts.map((toast) => (
-        <ToastItem
-          key={toast.id}
-          toast={toast}
-          onRemove={onRemove}
-        />
+        <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
       ))}
     </div>
   );
