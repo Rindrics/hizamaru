@@ -7,6 +7,7 @@
   --primary-hover: #A6808E;
   --primary-text: #ffffff;
   --error: #F28379;
+  --success: #D9D1C7;
 }
 
 @theme inline {
@@ -59,6 +60,10 @@ body {
 
   .bg-error {
     background-color: var(--error);
+  }
+
+  .bg-error:hover {
+    opacity: 0.9;
   }
 
   .text-error {
