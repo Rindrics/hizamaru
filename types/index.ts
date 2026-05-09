@@ -58,6 +58,7 @@ type 住宅購入イベント = 基本ライフイベント & {
   頭金: number;
   ローン返済年数: number;
   ローン利率: number;
+  ボーナス月加算?: number;
 };
 
 type 入学イベント = 基本ライフイベント & {
@@ -163,6 +164,7 @@ export type 返済計画 = {
   元金: number;
   利息: number;
   残高: number;
+  ボーナス加算?: number;
 };
 
 // API レスポンス型
