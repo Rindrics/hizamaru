@@ -1,0 +1,28 @@
+name: Preview Deploy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trigger Vercel preview deployment
+        run: |
+          curl -X POST "https://api.vercel.com/v13/deployments" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "hizamaru",
+              "project": "hizamaru",
+              "gitSource": {
+                "ref": "${{ github.head_ref }}",
+                "repoId": "${{ github.repository }}"
+              },
+              "env": {
+                "USE_IN_MEMORY_DB": "true"
+              }
+            }'
