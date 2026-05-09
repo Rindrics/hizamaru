@@ -23,3 +23,25 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect('/');
 }
+
+export async function updateUserDemoMode(demoMode: boolean) {
+  const supabase = await getSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: 'User not authenticated' };
+  }
+
+  const { error } = await supabase
+    .from('users')
+    .update({ demo_mode: demoMode })
+    .eq('id', user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true };
+}

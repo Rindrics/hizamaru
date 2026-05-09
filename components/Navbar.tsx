@@ -20,7 +20,7 @@ export default async function Navbar() {
           </div>
 
           <div className="flex items-center gap-4">
-            <DemoToggle />
+            <DemoToggle user={user} />
             {user && (
               <>
                 <span className="text-sm text-gray-700">{user.email}</span>

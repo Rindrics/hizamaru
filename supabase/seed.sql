@@ -2,8 +2,8 @@
 insert into accounts (id, invite_token, invite_token_expires_at) values
   ('demo-account', 'demo-token-123', now() + interval '30 days');
 
-insert into users (id, account_id, email, display_name) values
-  ('demo-user-1', 'demo-account', 'demo@example.com', 'デモユーザー');
+insert into users (id, account_id, email, display_name, demo_mode) values
+  ('demo-user-1', 'demo-account', 'demo@example.com', 'デモユーザー', false);
 
 -- Demo family members
 insert into family_members (id, account_id, name, birth_date, relationship) values

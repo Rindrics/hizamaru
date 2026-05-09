@@ -2,11 +2,25 @@ import { getSupabaseServerClient } from '@/lib/supabase-server';
 import { fetchDemoData, fetchUserData } from '@/app/actions/data';
 import type { 家族メンバー, ライフプラン, ライフイベント } from '@/types';
 
-async function DataDisplay({ showDemo }: { showDemo: boolean }) {
+async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
   const supabase = await getSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Get user's demo_mode preference if logged in
+  let showDemo = urlShowDemo;
+  if (user) {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('demo_mode')
+      .eq('id', user.id)
+      .single();
+
+    if (userData !== null) {
+      showDemo = userData.demo_mode ?? urlShowDemo;
+    }
+  }
 
   if (!user && !showDemo) {
     return (
