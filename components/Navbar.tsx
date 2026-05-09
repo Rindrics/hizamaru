@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 import { logout } from '@/app/actions/auth';
+import DemoToggle from './DemoToggle';
 
 export default async function Navbar() {
   const supabase = await getSupabaseServerClient();
@@ -19,6 +20,7 @@ export default async function Navbar() {
           </div>
 
           <div className="flex items-center gap-4">
+            <DemoToggle />
             {user && (
               <>
                 <span className="text-sm text-gray-700">{user.email}</span>

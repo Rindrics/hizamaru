@@ -1,13 +1,13 @@
 import { getSupabaseServerClient } from '@/lib/supabase-server';
-import { fetchDemoData } from '@/app/actions/data';
+import { fetchDemoData, fetchUserData } from '@/app/actions/data';
 
-export default async function Home() {
+async function DataDisplay({ showDemo }: { showDemo: boolean }) {
   const supabase = await getSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user && !showDemo) {
     return (
       <div className="min-h-screen bg-gray-50">
         <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
@@ -26,11 +26,30 @@ export default async function Home() {
     );
   }
 
-  const {
-    familyMembers: sampleFamilyMembers,
-    lifePlans: sampleLifePlans,
-    lifeEvents: sampleLifeEvents,
-  } = await fetchDemoData();
+  let familyMembers, lifePlans, lifeEvents;
+
+  if (showDemo) {
+    const data = await fetchDemoData();
+    familyMembers = data.familyMembers;
+    lifePlans = data.lifePlans;
+    lifeEvents = data.lifeEvents;
+  } else {
+    try {
+      const data = await fetchUserData();
+      familyMembers = data.familyMembers;
+      lifePlans = data.lifePlans;
+      lifeEvents = data.lifeEvents;
+    } catch (error) {
+      // User not authenticated or no data - show empty data
+      familyMembers = [];
+      lifePlans = [];
+      lifeEvents = [];
+    }
+  }
+
+  const sampleFamilyMembers = familyMembers;
+  const sampleLifePlans = lifePlans;
+  const sampleLifeEvents = lifeEvents;
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -141,4 +160,15 @@ export default async function Home() {
       </main>
     </div>
   );
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const showDemo = params.demo === '1';
+
+  return <DataDisplay showDemo={showDemo} />;
 }
