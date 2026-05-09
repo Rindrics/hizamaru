@@ -46,6 +46,18 @@ export class ライフプランSupabaseRepository implements ライフプランR
     説明: string | null
   ): Promise<ライフプラン> {
     const supabase = getSupabaseClient();
+
+    // Check if this is the first plan for this account
+    const { data: existingPlans, error: checkError } = await supabase
+      .from('life_plans')
+      .select('id', { count: 'exact' })
+      .eq('account_id', アカウントID);
+
+    if (checkError) throw checkError;
+
+    // First plan should be the main plan
+    const isFirstPlan = !existingPlans || existingPlans.length === 0;
+
     const id = crypto.randomUUID();
     const { data, error } = await supabase
       .from('life_plans')
@@ -54,7 +66,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
         account_id: アカウントID,
         name: 名前,
         description: 説明,
-        is_active: false,
+        is_active: isFirstPlan,
       })
       .select()
       .single();
