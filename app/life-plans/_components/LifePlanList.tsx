@@ -34,14 +34,20 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
     id: string;
     name: string;
   } | null>(null);
-  const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
+  const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [, startTransition] = useTransition();
   const { toasts, remove, info, success } = useToast();
   const router = useRouter();
 
   // リロード直後はソート済みを使い、操作後はソート前の順序を保つ
-  const plansToDisplay = displayPlans || [...initialPlans].sort((a, b) => (b.有効フラグ ? 1 : 0) - (a.有効フラグ ? 1 : 0));
+  const plansToDisplay =
+    displayPlans ||
+    [...initialPlans].sort(
+      (a, b) => (b.有効フラグ ? 1 : 0) - (a.有効フラグ ? 1 : 0)
+    );
 
   const handleAddClose = () => {
     setIsAddOpen(false);
@@ -145,7 +151,9 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                   </th>
                 </tr>
               </thead>
-              <tbody className={`divide-y divide-gray-200 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
+              <tbody
+                className={`divide-y divide-gray-200 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
+              >
                 {plansToDisplay.map((plan) => (
                   <tr
                     key={plan.ID}
