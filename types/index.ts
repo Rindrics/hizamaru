@@ -1,139 +1,139 @@
-// Domain Model Types
+// ドメインモデル型定義
 
-export type Account = {
-  id: string;
-  inviteToken: string;
-  inviteTokenExpiresAt: Date;
-  createdAt: Date;
+export type アカウント = {
+  ID: string;
+  招待トークン: string;
+  招待トークン有効期限: Date;
+  作成日: Date;
 };
 
-export type User = {
-  id: string;
-  accountId: string;
-  email: string;
-  displayName: string | null;
-  createdAt: Date;
+export type ユーザー = {
+  ID: string;
+  アカウントID: string;
+  メール: string;
+  表示名: string | null;
+  作成日: Date;
 };
 
-export type FamilyMember = {
-  id: string;
-  accountId: string;
-  name: string;
-  birthDate: Date;
-  relation: string; // 'husband' | 'wife' | 'child' etc.
-  createdAt: Date;
+export type 家族メンバー = {
+  ID: string;
+  アカウントID: string;
+  名前: string;
+  生年月日: Date;
+  続柄: string; // 'husband' | 'wife' | 'child' など
+  作成日: Date;
 };
 
-export type LifePlan = {
-  id: string;
-  accountId: string;
-  name: string;
-  description: string | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+export type ライフプラン = {
+  ID: string;
+  アカウントID: string;
+  名前: string;
+  説明: string | null;
+  有効フラグ: boolean;
+  作成日: Date;
+  更新日: Date;
 };
 
-export type LifeEventType =
+export type ライフイベント種別 =
   | 'birth'
   | 'home_purchase'
   | 'education'
   | 'retirement';
 
-export type LifeEvent = {
-  id: string;
-  lifePlanId: string;
-  eventType: LifeEventType;
-  eventYear: number;
-  createdAt: Date;
-  updatedAt: Date;
-  // Birth Event
-  familyMemberId?: string;
-  // Home Purchase Event
-  homePrice?: number;
-  downPayment?: number;
-  loanTermYears?: number;
-  loanInterestRate?: number;
-  // Education Event
-  schoolType?: string;
-  startYear?: number;
-  endYear?: number;
-  monthlyTuition?: number;
-  annualEntranceFee?: number;
-  extraActivitiesMonthly?: number;
-  // Retirement Event
-  retirementYear?: number;
+export type ライフイベント = {
+  ID: string;
+  ライフプランID: string;
+  イベント種別: ライフイベント種別;
+  イベント年: number;
+  作成日: Date;
+  更新日: Date;
+  // 出産イベント
+  家族メンバーID?: string;
+  // 住宅購入イベント
+  住宅価格?: number;
+  頭金?: number;
+  ローン返済年数?: number;
+  ローン利率?: number;
+  // 習い事・入学イベント
+  学校種別?: string;
+  開始年?: number;
+  終了年?: number;
+  月謝?: number;
+  年間入学金?: number;
+  習い事月額?: number;
+  // 退職イベント
+  退職年?: number;
 };
 
-export type Income = {
-  id: string;
-  lifePlanId: string;
-  familyMemberId: string;
-  monthlySalary: number;
-  bonusAmount: number;
-  expectedRaiseRate: number;
-  validFromYear: number;
-  untilYear?: number;
-  createdAt: Date;
+export type 収入 = {
+  ID: string;
+  ライフプランID: string;
+  家族メンバーID: string;
+  月給: number;
+  ボーナス額: number;
+  想定昇給率: number;
+  有効開始年: number;
+  有効終了年?: number;
+  作成日: Date;
 };
 
-export type Investment = {
-  id: string;
-  lifePlanId: string;
-  investmentType: 'nisa' | 'ideco' | 'stock';
-  annualContribution: number;
-  annualReturnRate: number;
-  startYear: number;
-  endYear?: number;
-  createdAt: Date;
+export type 投資 = {
+  ID: string;
+  ライフプランID: string;
+  投資種別: 'nisa' | 'ideco' | 'stock';
+  年間拠出額: number;
+  年間利回り: number;
+  開始年: number;
+  終了年?: number;
+  作成日: Date;
 };
 
-export type BudgetCategory = {
-  id: string;
-  accountId: string;
-  name: string;
-  isDefault: boolean;
-  createdAt: Date;
+export type 予算カテゴリ = {
+  ID: string;
+  アカウントID: string;
+  名前: string;
+  デフォルト: boolean;
+  作成日: Date;
 };
 
-export type Budget = {
-  id: string;
-  lifePlanId: string;
-  budgetCategoryId: string;
-  amount: number;
-  validFrom: string; // 'YYYY-MM'
-  createdAt: Date;
+export type 予算 = {
+  ID: string;
+  ライフプランID: string;
+  予算カテゴリID: string;
+  金額: number;
+  有効期間: string; // 'YYYY-MM'
+  作成日: Date;
 };
 
-export type Expense = {
-  id: string;
-  accountId: string;
-  budgetCategoryId: string;
-  amount: number;
-  spentOn: Date;
-  note?: string;
-  createdAt: Date;
+export type 支出 = {
+  ID: string;
+  アカウントID: string;
+  予算カテゴリID: string;
+  金額: number;
+  支出日: Date;
+  メモ?: string;
+  作成日: Date;
 };
 
-// Projection Results
-export type YearlyProjection = {
-  year: number;
-  age: { [familyMemberId: string]: number };
-  income: number;
-  expense: number;
-  investmentGain: number;
-  asset: number;
-  lifeEvents: LifeEvent[];
+// 予測計算の結果型
+export type 年次予測 = {
+  年: number;
+  年齢: { [家族メンバーID: string]: number };
+  収入: number;
+  支出: number;
+  投資利益: number;
+  資産: number;
+  ライフイベント: ライフイベント[];
 };
 
-export type MortgagePayment = {
-  month: number;
-  principal: number;
-  interest: number;
-  balance: number;
+export type 返済計画 = {
+  月: number;
+  元金: number;
+  利息: number;
+  残高: number;
 };
 
-// API Response Type
-export type ActionResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+// API レスポンス型
+export type アクション結果<T> =
+  | { 成功: true; データ: T }
+  | { 成功: false; エラー: string };

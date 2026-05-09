@@ -1,36 +1,34 @@
-import type { MortgagePayment } from '@/types';
+import type { 返済計画 } from '@/types';
 
-interface MortgageInput {
-  loanAmount: number;
-  annualInterestRate: number;
-  loanTermYears: number;
+interface ローン入力 {
+  借入額: number;
+  年利率: number;
+  返済年数: number;
 }
 
-export function calculateMortgageSchedule(
-  input: MortgageInput
-): MortgagePayment[] {
-  const { loanAmount, annualInterestRate, loanTermYears } = input;
-  const monthlyRate = annualInterestRate / 12;
-  const totalMonths = loanTermYears * 12;
-  const monthlyPayment =
-    (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
-    (Math.pow(1 + monthlyRate, totalMonths) - 1);
+export function ローン返済計画を計算(入力: ローン入力): 返済計画[] {
+  const { 借入額, 年利率, 返済年数 } = 入力;
+  const 月利率 = 年利率 / 12;
+  const 総月数 = 返済年数 * 12;
+  const 月返済額 =
+    (借入額 * 月利率 * Math.pow(1 + 月利率, 総月数)) /
+    (Math.pow(1 + 月利率, 総月数) - 1);
 
-  const schedule: MortgagePayment[] = [];
-  let balance = loanAmount;
+  const 返済スケジュール: 返済計画[] = [];
+  let 残高 = 借入額;
 
-  for (let month = 1; month <= totalMonths; month++) {
-    const interest = balance * monthlyRate;
-    const principal = monthlyPayment - interest;
-    balance -= principal;
+  for (let 月数 = 1; 月数 <= 総月数; 月数++) {
+    const 利息 = 残高 * 月利率;
+    const 元金 = 月返済額 - 利息;
+    残高 -= 元金;
 
-    schedule.push({
-      month,
-      principal,
-      interest,
-      balance: Math.max(0, balance),
+    返済スケジュール.push({
+      月: 月数,
+      元金: 元金,
+      利息: 利息,
+      残高: Math.max(0, 残高),
     });
   }
 
-  return schedule;
+  return 返済スケジュール;
 }
