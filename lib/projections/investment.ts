@@ -9,13 +9,7 @@ export function 複利を計算(入力: 複利計算入力): number {
   const { 元本, 年利率, 年数, 複利計算周期 = 1 } = 入力;
   const 利率 = 年利率 / 100;
 
-  return (
-    元本 *
-    Math.pow(
-      1 + 利率 / 複利計算周期,
-      複利計算周期 * 年数
-    )
-  );
+  return 元本 * Math.pow(1 + 利率 / 複利計算周期, 複利計算周期 * 年数);
 }
 
 interface 投資予測入力 {
