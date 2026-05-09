@@ -25,10 +25,11 @@ export async function login(formData: FormData) {
   if (!userRecord) {
     // Create account for new user
     const accountId = crypto.randomUUID();
+    const inviteToken = crypto.randomUUID();
 
     const { error: accountError } = await supabase.from('accounts').insert({
       id: accountId,
-      invite_token: '',
+      invite_token: inviteToken,
       invite_token_expires_at: new Date(
         Date.now() + 7 * 24 * 60 * 60 * 1000
       ).toISOString(),
