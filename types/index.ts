@@ -13,12 +13,22 @@ export type ユーザー = {
   作成日: Date;
 };
 
+export type 家族メンバー続柄 =
+  | '夫'
+  | '妻'
+  | '長女'
+  | '長男'
+  | '次女'
+  | '次男'
+  | '三女'
+  | '三男';
+
 export type 家族メンバー = {
   ID: string;
   アカウントID: string;
   名前: string;
   生年月日: Date;
-  続柄: string; // 'husband' | 'wife' | 'child' など
+  続柄: 家族メンバー続柄;
   作成日: Date;
 };
 

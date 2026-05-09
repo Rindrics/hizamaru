@@ -6,23 +6,23 @@ const sampleFamilyMembers: 家族メンバー[] = [
     ID: 'izanagi',
     アカウントID: 'demo',
     名前: 'イザナギ',
-    生年月日: new Date('1234-05-06'),
-    続柄: 'husband',
+    生年月日: new Date('1990-05-06'),
+    続柄: '夫',
     作成日: new Date(),
   },
   {
     ID: 'izanami',
     アカウントID: 'demo',
     名前: 'イザナミ',
-    生年月日: new Date('1234-05-06'),
-    続柄: 'wife',
+    生年月日: new Date('1992-05-06'),
+    続柄: '妻',
     作成日: new Date(),
   },
   {
     ID: 'amaterasu',
     アカウントID: 'demo',
     名前: 'アマテラス',
-    生年月日: new Date('2345-06-07'),
+    生年月日: new Date('2020-06-07'),
     続柄: '長女',
     作成日: new Date(),
   },
@@ -155,7 +155,7 @@ export default function Home() {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {sampleLifeEvents.map((event) => {
-                  let eventName = event.イベント種別;
+                  let eventName: string = event.イベント種別;
                   let details = '';
 
                   if (event.イベント種別 === '出産') {
