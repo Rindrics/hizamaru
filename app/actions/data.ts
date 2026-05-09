@@ -54,7 +54,7 @@ export async function fetchUserData() {
   const { data: userData, error: userError } = await supabase
     .from('users')
     .select('account_id')
-    .eq('id', user.id)
+    .eq('id', user.id.toString())
     .single();
 
   if (userError || !userData) {

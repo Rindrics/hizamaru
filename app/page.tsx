@@ -22,7 +22,7 @@ async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
     const { data: userData } = await supabase
       .from('users')
       .select('demo_mode')
-      .eq('id', user.id)
+      .eq('id', user.id.toString())
       .single();
 
     if (userData !== null) {
