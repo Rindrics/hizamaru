@@ -4,6 +4,7 @@ export interface ToastMessage {
   id: string;
   message: string;
   type: 'success' | 'error' | 'info';
+  status?: 'processing' | 'completed';
   duration?: number;
   minDuration?: number;
 }
@@ -16,10 +17,11 @@ export function useToast() {
       message: string,
       type: 'success' | 'error' | 'info' = 'info',
       duration = 3000,
-      minDuration = 0
+      minDuration = 0,
+      status?: 'processing' | 'completed'
     ) => {
       const id = Math.random().toString(36).substr(2, 9);
-      const toast: ToastMessage = { id, message, type, duration, minDuration };
+      const toast: ToastMessage = { id, message, type, status, duration, minDuration };
       setToasts((prev) => [...prev, toast]);
       return id;
     },
@@ -31,20 +33,20 @@ export function useToast() {
   }, []);
 
   const success = useCallback(
-    (message: string, duration?: number, minDuration?: number) =>
-      add(message, 'success', duration, minDuration),
+    (message: string, minDurationSeconds?: number, status?: 'processing' | 'completed') =>
+      add(message, 'success', status === 'completed' ? 2500 : 3000, minDurationSeconds || 0, status),
     [add]
   );
 
   const error = useCallback(
-    (message: string, duration?: number, minDuration?: number) =>
-      add(message, 'error', duration, minDuration),
+    (message: string, minDurationSeconds?: number, status?: 'processing' | 'completed') =>
+      add(message, 'error', status === 'completed' ? 2500 : 3000, minDurationSeconds || 0, status),
     [add]
   );
 
   const info = useCallback(
-    (message: string, minDuration?: number, duration?: number) =>
-      add(message, 'info', duration, minDuration),
+    (message: string, minDurationSeconds?: number, status?: 'processing' | 'completed') =>
+      add(message, 'info', status === 'processing' ? 1500 : 3000, minDurationSeconds || 0, status),
     [add]
   );
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Edit2, Trash2, Copy } from 'lucide-react';
 import type { ライフプラン } from '@/types';
@@ -33,6 +34,7 @@ export default function LifePlanList({ plans }: Props) {
   } | null>(null);
   const [, startTransition] = useTransition();
   const { toasts, remove, info, success } = useToast();
+  const router = useRouter();
 
   const handleAddClose = () => {
     setIsAddOpen(false);
@@ -62,15 +64,13 @@ export default function LifePlanList({ plans }: Props) {
 
   const handleDuplicateExecute = () => {
     if (!duplicateConfirm) return;
-    const toastId = info('複製中...', 1.0);
+    info('複製中...', 1.0, 'processing');
     startTransition(async () => {
       const result = await ライフプラン複製(duplicateConfirm.id);
-      remove(toastId);
+
       if (result?.成功) {
-        success('複製完了');
-        setTimeout(() => {
-          location.reload();
-        }, 500);
+        success('複製完了', 1.0, 'completed');
+        setTimeout(() => router.refresh(), 2500);
       }
     });
   };
@@ -82,7 +82,7 @@ export default function LifePlanList({ plans }: Props) {
       deleteConfirm.type === 'setMain'
         ? 'メインプランに設定中...'
         : '削除中...';
-    const toastId = info(message, 1.0);
+    info(message, 1.0, 'processing');
 
     startTransition(async () => {
       try {
@@ -91,15 +91,14 @@ export default function LifePlanList({ plans }: Props) {
         } else {
           await ライフプラン削除(deleteConfirm.id);
         }
-        remove(toastId);
         const successMessage =
           deleteConfirm.type === 'setMain'
             ? 'メインプランに設定完了'
             : '削除完了';
-        success(successMessage);
-        setTimeout(() => location.reload(), 500);
+        success(successMessage, 1.0, 'completed');
+        setTimeout(() => router.refresh(), 2500);
       } catch (err) {
-        remove(toastId);
+        //
       }
     });
   };

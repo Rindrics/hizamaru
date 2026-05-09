@@ -115,7 +115,7 @@ export async function ライフプラン削除(id: string) {
 
     logger.info('Life plan deleted', { planId: id });
 
-    redirect('/life-plans');
+    revalidatePath('/life-plans');
   } catch (err) {
     const message = err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to delete life plan', { error: message });
@@ -132,11 +132,8 @@ export async function ライフプランをメインにする(planId: string) {
 
     logger.info('Life plan set as main', { planId, accountId });
 
-    redirect('/life-plans');
+    revalidatePath('/life-plans');
   } catch (err) {
-    if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
-      throw err;
-    }
     const message = err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to set life plan as main', { error: message });
   }
