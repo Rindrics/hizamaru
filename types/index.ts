@@ -39,30 +39,48 @@ export type ライフイベント種別 =
   | '習い事'
   | '退職';
 
-export type ライフイベント = {
+type 基本ライフイベント = {
   ID: string;
   ライフプランID: string;
-  イベント種別: ライフイベント種別;
   イベント年: number;
   作成日: Date;
   更新日: Date;
-  // 出産イベント
-  家族メンバーID?: string;
-  // 住宅購入イベント
-  住宅価格?: number;
-  頭金?: number;
-  ローン返済年数?: number;
-  ローン利率?: number;
-  // 習い事・入学イベント
-  学校種別?: string;
-  開始年?: number;
-  終了年?: number;
-  月謝?: number;
-  年間入学金?: number;
-  習い事月額?: number;
-  // 退職イベント
-  退職年?: number;
 };
+
+type 出産イベント = 基本ライフイベント & {
+  イベント種別: '出産';
+  家族メンバーID: string;
+};
+
+type 住宅購入イベント = 基本ライフイベント & {
+  イベント種別: '住宅購入';
+  住宅価格: number;
+  頭金: number;
+  ローン返済年数: number;
+  ローン利率: number;
+};
+
+type 入学イベント = 基本ライフイベント & {
+  イベント種別: '入学';
+  学校種別: string;
+  開始年: number;
+  終了年: number;
+  年間入学金?: number;
+};
+
+type 習い事イベント = 基本ライフイベント & {
+  イベント種別: '習い事';
+  開始年: number;
+  終了年: number;
+  月謝: number;
+};
+
+type 退職イベント = 基本ライフイベント & {
+  イベント種別: '退職';
+  退職年: number;
+};
+
+export type ライフイベント = 出産イベント | 住宅購入イベント | 入学イベント | 習い事イベント | 退職イベント;
 
 export type 収入 = {
   ID: string;
