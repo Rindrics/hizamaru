@@ -73,6 +73,7 @@ type 習い事イベント = 基本ライフイベント & {
   開始年: number;
   終了年: number;
   月謝: number;
+  年次支出?: 習い事年次支出[];
 };
 
 type 退職イベント = 基本ライフイベント & {
@@ -87,16 +88,25 @@ export type ライフイベント =
   | 習い事イベント
   | 退職イベント;
 
-export type 収入 = {
+type 年別金額 = {
   ID: string;
+  有効開始年: number;
+  有効終了年?: number;
+  作成日: Date;
+};
+
+type 習い事年次支出 = 年別金額 & {
+  名前: string;
+  金額: number;
+  回数?: number;
+};
+
+export type 収入 = 年別金額 & {
   ライフプランID: string;
   家族メンバーID: string;
   月給: number;
   ボーナス額: number;
   想定昇給率: number;
-  有効開始年: number;
-  有効終了年?: number;
-  作成日: Date;
 };
 
 export type 投資 = {
