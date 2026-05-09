@@ -1,16 +1,24 @@
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 import { fetchDemoData, fetchUserData } from '@/app/actions/data';
 import type { 家族メンバー, ライフプラン, ライフイベント } from '@/types';
+import { logger } from '@/lib/logger';
 
 async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
+  logger.debug('DataDisplay: start', { urlShowDemo });
+
   const supabase = await getSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  logger.debug('DataDisplay: user auth check', { isAuthenticated: !!user });
+
   // Get user's demo_mode preference if logged in
   let showDemo = urlShowDemo;
   if (user) {
+    logger.debug('DataDisplay: fetching user demo_mode preference', {
+      userId: user.id,
+    });
     const { data: userData } = await supabase
       .from('users')
       .select('demo_mode')
@@ -19,6 +27,9 @@ async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
 
     if (userData !== null) {
       showDemo = userData.demo_mode ?? urlShowDemo;
+      logger.debug('DataDisplay: demo_mode preference loaded', {
+        demoMode: showDemo,
+      });
     }
   }
 
@@ -56,8 +67,11 @@ async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
       familyMembers = data.familyMembers;
       lifePlans = data.lifePlans;
       lifeEvents = data.lifeEvents;
-    } catch (error) {
+    } catch (err) {
       // User not authenticated or no data - show empty data
+      logger.debug('DataDisplay: failed to fetch user data', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       familyMembers = [];
       lifePlans = [];
       lifeEvents = [];

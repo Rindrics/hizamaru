@@ -6,6 +6,7 @@ import {
   ライフイベントRepo,
 } from '@/lib/repositories';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { logger } from '@/lib/logger';
 
 const DEMO_ACCOUNT_ID = 'demo-account';
 
@@ -34,14 +35,20 @@ export async function fetchDemoData(accountId: string = DEMO_ACCOUNT_ID) {
 }
 
 export async function fetchUserData() {
+  logger.debug('fetchUserData: start');
+  const startTime = Date.now();
+
   const supabase = await getSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
+    logger.warn('fetchUserData: user not authenticated');
     throw new Error('User not authenticated');
   }
+
+  logger.debug('fetchUserData: fetching user account', { userId: user.id });
 
   // Get user's account_id from the users table
   const { data: userData, error: userError } = await supabase
@@ -51,8 +58,21 @@ export async function fetchUserData() {
     .single();
 
   if (userError || !userData) {
+    logger.error('fetchUserData: failed to get user account', {
+      userId: user.id,
+      error: userError?.message,
+    });
     throw new Error('Failed to get user account');
   }
 
-  return fetchDemoData(userData.account_id);
+  logger.debug('fetchUserData: fetching data', {
+    accountId: userData.account_id,
+  });
+
+  const result = await fetchDemoData(userData.account_id);
+
+  const elapsed = Date.now() - startTime;
+  logger.debug('fetchUserData: complete', { elapsed });
+
+  return result;
 }
