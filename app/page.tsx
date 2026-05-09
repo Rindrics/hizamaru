@@ -1,79 +1,11 @@
-import type { ライフプラン, 家族メンバー, ライフイベント } from '@/types';
+import { fetchDemoData } from '@/app/actions/data';
 
-// サンプルデータ
-const sampleFamilyMembers: 家族メンバー[] = [
-  {
-    ID: 'izanagi',
-    アカウントID: 'demo',
-    名前: 'イザナギ',
-    生年月日: new Date('1990-05-06'),
-    続柄: '夫',
-    作成日: new Date(),
-  },
-  {
-    ID: 'izanami',
-    アカウントID: 'demo',
-    名前: 'イザナミ',
-    生年月日: new Date('1992-05-06'),
-    続柄: '妻',
-    作成日: new Date(),
-  },
-  {
-    ID: 'amaterasu',
-    アカウントID: 'demo',
-    名前: 'アマテラス',
-    生年月日: new Date('2020-06-07'),
-    続柄: '長女',
-    作成日: new Date(),
-  },
-];
-
-const sampleLifePlans: ライフプラン[] = [
-  {
-    ID: 'plan-1',
-    アカウントID: 'demo',
-    名前: '基本シナリオ',
-    説明: '標準的なライフプラン',
-    有効フラグ: true,
-    作成日: new Date(),
-    更新日: new Date(),
-  },
-  {
-    ID: 'plan-2',
-    アカウントID: 'demo',
-    名前: 'シナリオ2',
-    説明: '比較対象のライフプラン',
-    有効フラグ: false,
-    作成日: new Date(),
-    更新日: new Date(),
-  },
-];
-
-const sampleLifeEvents: ライフイベント[] = [
-  {
-    ID: 'event-1',
-    ライフプランID: 'plan-1',
-    イベント種別: '出産',
-    イベント年: 2020,
-    作成日: new Date(),
-    更新日: new Date(),
-    家族メンバーID: 'amaterasu',
-  },
-  {
-    ID: 'event-2',
-    ライフプランID: 'plan-1',
-    イベント種別: '住宅購入',
-    イベント年: 2026,
-    作成日: new Date(),
-    更新日: new Date(),
-    住宅価格: 35000000,
-    頭金: 7000000,
-    ローン返済年数: 35,
-    ローン利率: 0.02,
-  },
-];
-
-export default function Home() {
+export default async function Home() {
+  const {
+    familyMembers: sampleFamilyMembers,
+    lifePlans: sampleLifePlans,
+    lifeEvents: sampleLifeEvents,
+  } = await fetchDemoData();
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
@@ -162,7 +94,7 @@ export default function Home() {
                     const member = sampleFamilyMembers.find(
                       (m) => m.ID === event.家族メンバーID
                     );
-                    eventName = `${member?.名前}の誕生`;
+                    eventName = `${member?.名前}誕生`;
                   } else if (event.イベント種別 === '住宅購入') {
                     details = `${event.住宅価格.toLocaleString()}円 • ${event.ローン返済年数}年ローン`;
                   }

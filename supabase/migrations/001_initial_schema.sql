@@ -174,3 +174,60 @@ alter table investments enable row level security;
 alter table budget_categories enable row level security;
 alter table budgets enable row level security;
 alter table expenses enable row level security;
+
+-- RLS policies for demo data (allow all users to read demo account data)
+create policy "Allow reading demo account data" on accounts
+  for select using (id = 'demo-account');
+
+create policy "Allow reading demo users" on users
+  for select using (account_id = 'demo-account');
+
+create policy "Allow reading demo family members" on family_members
+  for select using (account_id = 'demo-account');
+
+create policy "Allow reading demo life plans" on life_plans
+  for select using (account_id = 'demo-account');
+
+create policy "Allow reading demo life events" on life_events
+  for select using (
+    life_plan_id in (
+      select id from life_plans where account_id = 'demo-account'
+    )
+  );
+
+create policy "Allow reading demo tutoring expenses" on tutoring_annual_expenses
+  for select using (
+    life_event_id in (
+      select id from life_events
+      where life_plan_id in (
+        select id from life_plans where account_id = 'demo-account'
+      )
+    )
+  );
+
+create policy "Allow reading demo income" on income
+  for select using (
+    life_plan_id in (
+      select id from life_plans where account_id = 'demo-account'
+    )
+  );
+
+create policy "Allow reading demo investments" on investments
+  for select using (
+    life_plan_id in (
+      select id from life_plans where account_id = 'demo-account'
+    )
+  );
+
+create policy "Allow reading demo budget categories" on budget_categories
+  for select using (account_id = 'demo-account');
+
+create policy "Allow reading demo budgets" on budgets
+  for select using (
+    life_plan_id in (
+      select id from life_plans where account_id = 'demo-account'
+    )
+  );
+
+create policy "Allow reading demo expenses" on expenses
+  for select using (account_id = 'demo-account');
