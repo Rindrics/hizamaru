@@ -100,7 +100,8 @@ export async function 収入追加(
       },
     };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to add income', {
       lifePlanId,
       familyMemberId,
@@ -186,7 +187,8 @@ export async function 収入更新(
       },
     };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to update income', {
       incomeId,
       error: errorMessage,
@@ -229,7 +231,8 @@ export async function 収入削除(incomeId: string): Promise<void> {
 
     revalidatePath(`/life-plans/${income.life_plan_id}/edit`);
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to delete income', {
       incomeId,
       error: errorMessage,

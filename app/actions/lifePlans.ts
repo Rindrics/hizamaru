@@ -94,7 +94,8 @@ export async function ライフプラン追加(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to create life plan', {
       error: errorMessage,
       stack: err instanceof Error ? err.stack : undefined,
@@ -139,7 +140,8 @@ export async function ライフプラン更新(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to update life plan', {
       planId: id,
       error: errorMessage,
@@ -234,7 +236,8 @@ export async function ライフプラン複製(id: string) {
 
     return { 成功: true };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to duplicate life plan', {
       originalPlanId: id,
       error: errorMessage,

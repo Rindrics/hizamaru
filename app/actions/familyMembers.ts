@@ -63,7 +63,8 @@ export async function 家族メンバー追加(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to create family member', {
       error: errorMessage,
       stack: err instanceof Error ? err.stack : undefined,
@@ -106,7 +107,8 @@ export async function 家族メンバー更新(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
     logger.error('Failed to update family member', {
       memberId: id,
       error: errorMessage,
