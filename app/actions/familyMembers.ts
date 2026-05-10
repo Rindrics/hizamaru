@@ -1,13 +1,13 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { 家族メンバーRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
 import type { 家族メンバー続柄 } from '@/types';
 
 async function getAccountId(): Promise<string> {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -63,9 +63,13 @@ export async function 家族メンバー追加(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    logger.error('Failed to create family member', { error: message });
-    return { 成功: false, エラー: message };
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to create family member', {
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return { 成功: false, エラー: '家族メンバーの追加に失敗しました' };
   }
 }
 
@@ -103,9 +107,14 @@ export async function 家族メンバー更新(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    logger.error('Failed to update family member', { error: message });
-    return { 成功: false, エラー: message };
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to update family member', {
+      memberId: id,
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return { 成功: false, エラー: '家族メンバーの更新に失敗しました' };
   }
 }
 

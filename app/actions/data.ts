@@ -5,14 +5,14 @@ import {
   ライフプランRepo,
   ライフイベントRepo,
 } from '@/lib/repositories';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { logger } from '@/lib/logger';
 
 export async function fetchUserData() {
   logger.debug('fetchUserData: start');
   const startTime = Date.now();
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

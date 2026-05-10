@@ -156,20 +156,28 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                 {plansToDisplay.map((plan) => (
                   <tr
                     key={plan.ID}
-                    onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
-                    className={`transition-all duration-500 cursor-pointer ${
+                    className={`transition-all duration-500 ${
                       highlightedPlanId === plan.ID
                         ? 'bg-blue-50 drop-shadow-md'
                         : 'hover:bg-gray-50'
                     }`}
                   >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    <td
+                      onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                      className="px-6 py-4 text-sm font-medium text-gray-900 cursor-pointer"
+                    >
                       {plan.名前}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td
+                      onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                      className="px-6 py-4 text-sm text-gray-600 cursor-pointer"
+                    >
                       {plan.説明 || '-'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-center">
+                    <td
+                      className="px-6 py-4 text-sm text-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <input
                         type="radio"
                         name="main-plan"
@@ -187,7 +195,10 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                         className="w-4 h-4"
                       />
                     </td>
-                    <td className="px-6 py-4 text-sm space-x-3">
+                    <td
+                      className="px-6 py-4 text-sm space-x-3"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         onClick={() => handleDuplicateConfirm(plan.ID)}
                         className="text-primary hover:text-primary-hover inline-block"

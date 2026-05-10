@@ -2,12 +2,16 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
-import { ライフプランRepo, 家族メンバーRepo } from '@/lib/repositories';
+import { getDbServerClient } from '@/lib/db';
+import { ライフプランRepo } from '@/lib/repositories';
+import {
+  createLifePlan,
+  duplicateLifePlan,
+} from '@/app/services/lifePlanService';
 import { logger } from '@/lib/logger';
 
 async function getAccountId(): Promise<string> {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -48,30 +52,9 @@ export async function ライフプラン追加(
       return { 成功: false, エラー: 'ライフプラン名は必須です' };
     }
 
-    const plan = await ライフプランRepo.作成(accountId, 名前, 説明);
-
-    // Copy family members to the new life plan
-    const familyMembers = await 家族メンバーRepo.アカウント別取得(accountId);
-    if (familyMembers && familyMembers.length > 0) {
-      const supabase = await getSupabaseServerClient();
-      const lifePlanFamilyMembers = familyMembers.map((member) => ({
-        id: `lp_fm_${crypto.randomUUID()}`,
-        life_plan_id: plan.ID,
-        family_member_id: member.ID,
-        name: member.名前,
-        relationship: member.続柄,
-        income: 0,
-      }));
-
-      const { error: insertError } = await supabase
-        .from('life_plan_family_members')
-        .insert(lifePlanFamilyMembers);
-
-      // Table might not exist yet, skip if error
-      if (insertError && insertError.code !== 'PGRST205') {
-        throw insertError;
-      }
-    }
+    // ビジネスロジックをサービス層で処理
+    // （ライフプラン作成 + family members コピー）
+    const plan = await createLifePlan(accountId, 名前, 説明);
 
     logger.info('Life plan created', {
       planId: plan.ID,
@@ -83,9 +66,13 @@ export async function ライフプラン追加(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    logger.error('Failed to create life plan', { error: message });
-    return { 成功: false, エラー: message };
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to create life plan', {
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return { 成功: false, エラー: 'ライフプラン作成に失敗しました' };
   }
 }
 
@@ -125,9 +112,14 @@ export async function ライフプラン更新(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    logger.error('Failed to update life plan', { error: message });
-    return { 成功: false, エラー: message };
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to update life plan', {
+      planId: id,
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return { 成功: false, エラー: 'ライフプラン更新に失敗しました' };
   }
 }
 
@@ -176,38 +168,22 @@ export async function ライフプラン複製(id: string) {
   try {
     logger.debug('LifePlan: duplicate request', { planId: id });
 
-    const newPlan = await ライフプランRepo.複製(id);
-
-    // Copy family members from original plan
-    const originalMembers =
-      await ライフプランRepo.ライフプランID別家族メンバー取得(id);
-    if (originalMembers && originalMembers.length > 0) {
-      const supabase = await getSupabaseServerClient();
-      const newMembers = originalMembers.map((member) => ({
-        id: `lp_fm_${crypto.randomUUID()}`,
-        life_plan_id: newPlan.ID,
-        family_member_id: member.family_member_id,
-        name: member.name,
-        relationship: member.relationship,
-        income: member.income,
-      }));
-
-      const { error: insertError } = await supabase
-        .from('life_plan_family_members')
-        .insert(newMembers);
-
-      if (insertError && insertError.code !== 'PGRST205') {
-        throw insertError;
-      }
-    }
+    // ビジネスロジックをサービス層で処理
+    // （ライフプラン複製 + family members コピー）
+    const newPlan = await duplicateLifePlan(id);
 
     logger.info('Life plan duplicated', { planId: id, newPlanId: newPlan.ID });
 
     return { 成功: true };
   } catch (err) {
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    logger.error('Failed to duplicate life plan', { error: message });
-    return { 成功: false, エラー: message };
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to duplicate life plan', {
+      originalPlanId: id,
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return { 成功: false, エラー: 'ライフプラン複製に失敗しました' };
   }
 }
 

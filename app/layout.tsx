@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Navbar from '@/components/Navbar';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import './globals.css';
 
 const geistSans = Geist({
@@ -24,7 +24,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

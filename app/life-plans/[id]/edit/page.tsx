@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { ライフプランRepo } from '@/lib/repositories';
 import { ライフプラン更新 } from '@/app/actions/lifePlans';
 import LifePlanForm from '../../_components/LifePlanForm';
@@ -13,7 +13,7 @@ interface Props {
 export default async function EditLifePlanPage({ params }: Props) {
   const { id } = await params;
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
