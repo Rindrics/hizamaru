@@ -16,7 +16,7 @@ export async function createLifePlan(
   const supabase = await getSupabaseServerClient();
 
   // Step 1: リポジトリでライフプランを作成
-  const plan = await ライフプランRepo.作成(accountId, name, description);
+  const plan = await ライフプランRepo.作成(supabase, accountId, name, description);
 
   // Step 2: アカウントの家族メンバーをこのライフプランにコピー
   const familyMembers = await 家族メンバーRepo.アカウント別取得(accountId);
@@ -51,7 +51,7 @@ export async function duplicateLifePlan(lifePlanId: string) {
   const supabase = await getSupabaseServerClient();
 
   // Step 1: リポジトリでライフプランを複製
-  const newPlan = await ライフプランRepo.複製(lifePlanId);
+  const newPlan = await ライフプランRepo.複製(supabase, lifePlanId);
 
   // Step 2: 元のプランの family members をこの複製プランにコピー
   const originalMembers =

@@ -3,6 +3,7 @@ import type {
   ライフプランRepository,
   ライフプラン家族メンバー,
 } from '../interfaces/lifePlanRepository';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { getSupabaseClient } from '@/lib/supabase';
 
 export class ライフプランSupabaseRepository implements ライフプランRepository {
@@ -44,12 +45,11 @@ export class ライフプランSupabaseRepository implements ライフプランR
   }
 
   async 作成(
+    supabase: SupabaseClient,
     アカウントID: string,
     名前: string,
     説明: string | null
   ): Promise<ライフプラン> {
-    const supabase = getSupabaseClient();
-
     // Check if this is the first plan for this account
     const { data: existingPlans, error: checkError } = await supabase
       .from('life_plans')
@@ -133,8 +133,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
     if (error) throw error;
   }
 
-  async 複製(ID: string): Promise<ライフプラン> {
-    const supabase = getSupabaseClient();
+  async 複製(supabase: SupabaseClient, ID: string): Promise<ライフプラン> {
     const original = await this.ID別取得(ID);
     if (!original) {
       throw new Error(`Life plan not found: ${ID}`);

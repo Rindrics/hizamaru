@@ -3,6 +3,7 @@ import type {
   ライフプランRepository,
   ライフプラン家族メンバー,
 } from '../interfaces/lifePlanRepository';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { 家族メンバーRepo } from '../index';
 
 const seedData: { [key: string]: ライフプラン[] } = {};
@@ -22,6 +23,7 @@ export class ライフプランInMemoryRepository implements ライフプランR
   }
 
   async 作成(
+    _supabase: SupabaseClient,
     アカウントID: string,
     名前: string,
     説明: string | null
@@ -112,7 +114,7 @@ export class ライフプランInMemoryRepository implements ライフプランR
     );
   }
 
-  async 複製(ID: string): Promise<ライフプラン> {
+  async 複製(_supabase: SupabaseClient, ID: string): Promise<ライフプラン> {
     let original: ライフプラン | null = null;
     for (const plans of Object.values(seedData)) {
       const plan = plans.find((p) => p.ID === ID);
