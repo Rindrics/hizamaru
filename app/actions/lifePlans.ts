@@ -4,7 +4,10 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 import { ライフプランRepo } from '@/lib/repositories';
-import { createLifePlan, duplicateLifePlan } from '@/app/services/lifePlanService';
+import {
+  createLifePlan,
+  duplicateLifePlan,
+} from '@/app/services/lifePlanService';
 import { logger } from '@/lib/logger';
 
 async function getAccountId(): Promise<string> {

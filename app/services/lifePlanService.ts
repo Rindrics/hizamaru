@@ -54,9 +54,8 @@ export async function duplicateLifePlan(lifePlanId: string) {
   const newPlan = await ライフプランRepo.複製(lifePlanId);
 
   // Step 2: 元のプランの family members をこの複製プランにコピー
-  const originalMembers = await ライフプランRepo.ライフプランID別家族メンバー取得(
-    lifePlanId
-  );
+  const originalMembers =
+    await ライフプランRepo.ライフプランID別家族メンバー取得(lifePlanId);
   if (originalMembers && originalMembers.length > 0) {
     const newMembers = originalMembers.map((member) => ({
       id: `lp_fm_${crypto.randomUUID()}`,
