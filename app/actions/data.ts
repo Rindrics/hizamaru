@@ -8,32 +8,6 @@ import {
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 import { logger } from '@/lib/logger';
 
-const DEMO_ACCOUNT_ID = 'demo-account';
-
-export async function fetchDemoData(accountId: string = DEMO_ACCOUNT_ID) {
-  try {
-    const [familyMembers, lifePlans] = await Promise.all([
-      家族メンバーRepo.アカウント別取得(accountId),
-      ライフプランRepo.アカウント別取得(accountId),
-    ]);
-
-    const lifeEvents = await ライフイベントRepo.ライフプランID別取得(
-      lifePlans.map((p) => p.ID)
-    );
-
-    return {
-      familyMembers,
-      lifePlans,
-      lifeEvents,
-    };
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : JSON.stringify(error);
-    console.error('Failed to fetch data:', errorMessage);
-    throw new Error(`Failed to fetch data: ${errorMessage}`);
-  }
-}
-
 export async function fetchUserData() {
   logger.debug('fetchUserData: start');
   const startTime = Date.now();
@@ -69,10 +43,28 @@ export async function fetchUserData() {
     accountId: userData.account_id,
   });
 
-  const result = await fetchDemoData(userData.account_id);
+  try {
+    const [familyMembers, lifePlans] = await Promise.all([
+      家族メンバーRepo.アカウント別取得(userData.account_id),
+      ライフプランRepo.アカウント別取得(userData.account_id),
+    ]);
 
-  const elapsed = Date.now() - startTime;
-  logger.debug('fetchUserData: complete', { elapsed });
+    const lifeEvents = await ライフイベントRepo.ライフプランID別取得(
+      lifePlans.map((p) => p.ID)
+    );
 
-  return result;
+    const elapsed = Date.now() - startTime;
+    logger.debug('fetchUserData: complete', { elapsed });
+
+    return {
+      familyMembers,
+      lifePlans,
+      lifeEvents,
+    };
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : JSON.stringify(error);
+    logger.error('fetchUserData: failed to fetch data', { error: errorMessage });
+    throw new Error(`Failed to fetch data: ${errorMessage}`);
+  }
 }

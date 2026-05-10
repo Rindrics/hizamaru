@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { logout } from '@/app/actions/auth';
-import DemoToggle from './DemoToggle';
 
 export default function Navbar({ user }: { user: User | null }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -62,10 +61,7 @@ export default function Navbar({ user }: { user: User | null }) {
                 </button>
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                    <div className="p-4 space-y-3">
-                      <div>
-                        <DemoToggle user={user} />
-                      </div>
+                    <div className="p-4">
                       <form action={logout} className="w-full">
                         <button
                           type="submit"
