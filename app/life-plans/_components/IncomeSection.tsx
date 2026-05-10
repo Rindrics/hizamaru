@@ -254,7 +254,7 @@ export default function IncomeSection({
         onClose={handleEditClose}
         title="収入を編集"
       >
-        <IncomeForm action={updateActionWithState} defaultValues={editModal} />
+        <IncomeForm action={updateActionWithState} defaultValues={editModal ?? undefined} />
       </FamilyMemberModal>
 
       <ConfirmDialog

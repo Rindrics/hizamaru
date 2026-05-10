@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Trash2, Copy } from 'lucide-react';
 import type { ライフプラン } from '@/types';
 import {
