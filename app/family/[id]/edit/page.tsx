@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { 家族メンバーRepo } from '@/lib/repositories';
 import { 家族メンバー更新 } from '@/app/actions/familyMembers';
 import FamilyMemberForm from '../../_components/FamilyMemberForm';
@@ -12,7 +12,7 @@ interface Props {
 export default async function EditFamilyMemberPage({ params }: Props) {
   const { id } = await params;
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

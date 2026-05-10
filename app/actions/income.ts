@@ -1,11 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { logger } from '@/lib/logger';
 
 async function getAccountId(): Promise<string> {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -31,7 +31,7 @@ async function verifyLifePlanOwnership(
   lifePlanId: string,
   accountId: string
 ): Promise<boolean> {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const { data } = await supabase
     .from('life_plans')
     .select('account_id')
@@ -55,7 +55,7 @@ export async function 収入追加(
       return { 成功: false, エラー: 'アクセス権限がありません' };
     }
 
-    const supabase = await getSupabaseServerClient();
+    const supabase = await getDbServerClient();
     const startYear = parseInt(formData.get('start_year') as string);
     const endYear = formData.get('end_year')
       ? parseInt(formData.get('end_year') as string)
@@ -122,7 +122,7 @@ export async function 収入更新(
 ): Promise<{ 成功?: boolean; エラー?: string; データ?: unknown }> {
   try {
     const accountId = await getAccountId();
-    const supabase = await getSupabaseServerClient();
+    const supabase = await getDbServerClient();
 
     // Verify ownership through life plan
     const { data: income } = await supabase
@@ -204,7 +204,7 @@ export async function 収入更新(
 export async function 収入削除(incomeId: string): Promise<void> {
   try {
     const accountId = await getAccountId();
-    const supabase = await getSupabaseServerClient();
+    const supabase = await getDbServerClient();
 
     // Verify ownership through life plan
     const { data: income } = await supabase

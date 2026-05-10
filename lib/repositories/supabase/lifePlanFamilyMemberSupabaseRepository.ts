@@ -3,13 +3,13 @@ import type {
   ライフプランファミリーメンバーRepository,
 } from '../interfaces/lifePlanFamilyMemberRepository';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getSupabaseClient } from '@/lib/supabase';
+import { getDbClient } from '@/lib/db';
 
 export class ライフプランファミリーメンバーSupabaseRepository implements ライフプランファミリーメンバーRepository {
   async ライフプランID別取得(
     lifePlanId: string
   ): Promise<ライフプラン家族メンバー[]> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('life_plan_family_members')
       .select('*')

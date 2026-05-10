@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { ライフプランRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
 import LifePlanList from './_components/LifePlanList';
@@ -7,7 +7,7 @@ import LifePlanList from './_components/LifePlanList';
 export const revalidate = 0;
 
 export default async function LifePlansPage() {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

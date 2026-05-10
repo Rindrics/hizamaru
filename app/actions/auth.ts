@@ -1,11 +1,11 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { logger } from '@/lib/logger';
 
 export async function login(formData: FormData) {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
 
   const { error, data } = await supabase.auth.signInWithPassword({
     email: formData.get('email') as string,
@@ -21,7 +21,7 @@ export async function login(formData: FormData) {
   }
 
   // Check if user record exists in public.users
-  const { data: userRecord, error: userError } = await supabase
+  const { data: userRecord } = await supabase
     .from('users')
     .select('id')
     .eq('id', data.user!.id.toString())
@@ -69,7 +69,7 @@ export async function login(formData: FormData) {
 }
 
 export async function logout() {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   await supabase.auth.signOut();
   redirect('/');
 }

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
 
   if (code) {
-    const supabase = await getSupabaseServerClient();
+    const supabase = await getDbServerClient();
     await supabase.auth.exchangeCodeForSession(code);
   }
 

@@ -1,13 +1,13 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { 家族メンバーRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
 import type { 家族メンバー続柄 } from '@/types';
 
 async function getAccountId(): Promise<string> {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

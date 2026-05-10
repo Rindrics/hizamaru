@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { ライフプランRepo } from '@/lib/repositories';
 import {
   createLifePlan,
@@ -11,7 +11,7 @@ import {
 import { logger } from '@/lib/logger';
 
 async function getAccountId(): Promise<string> {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

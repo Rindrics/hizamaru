@@ -1,4 +1,4 @@
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { fetchUserData } from '@/app/actions/data';
 import type { 家族メンバー, ライフプラン, ライフイベント } from '@/types';
 import { logger } from '@/lib/logger';
@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 async function DataDisplay() {
   logger.debug('DataDisplay: start');
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

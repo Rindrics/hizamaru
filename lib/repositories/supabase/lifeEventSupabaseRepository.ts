@@ -7,7 +7,7 @@ import type {
   退職イベント,
 } from '@/types';
 import type { ライフイベントRepository } from '../interfaces/lifeEventRepository';
-import { getSupabaseClient } from '@/lib/supabase';
+import { getDbClient } from '@/lib/db';
 
 export class ライフイベントSupabaseRepository implements ライフイベントRepository {
   async ライフプランID別取得(
@@ -17,7 +17,7 @@ export class ライフイベントSupabaseRepository implements ライフイベ�
       return [];
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('life_events')
       .select('*')

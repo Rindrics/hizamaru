@@ -1,6 +1,6 @@
 'use server';
 
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import {
   ライフプランRepo,
   家族メンバーRepo,
@@ -17,7 +17,7 @@ export async function createLifePlan(
   name: string,
   description: string | null
 ) {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
 
   // Step 1: リポジトリでライフプランを作成
   const plan = await ライフプランRepo.作成(
@@ -61,7 +61,7 @@ export async function createLifePlan(
  * 責務：ライフプラン複製 + 元のプランの関連データ（family members）をコピー
  */
 export async function duplicateLifePlan(lifePlanId: string) {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
 
   // Step 1: リポジトリでライフプランを複製
   const newPlan = await ライフプランRepo.複製(supabase, lifePlanId);

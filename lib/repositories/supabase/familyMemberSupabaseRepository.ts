@@ -1,6 +1,6 @@
 import type { 家族メンバー, 家族メンバー続柄 } from '@/types';
 import type { 家族メンバーRepository } from '../interfaces/familyMemberRepository';
-import { getSupabaseClient } from '@/lib/supabase';
+import { getDbClient } from '@/lib/db';
 
 export class 家族メンバーSupabaseRepository implements 家族メンバーRepository {
   private mapToEntity(m: Record<string, unknown>): 家族メンバー {
@@ -15,7 +15,7 @@ export class 家族メンバーSupabaseRepository implements 家族メンバーR
   }
 
   async アカウント別取得(アカウントID: string): Promise<家族メンバー[]> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('family_members')
       .select('*')
@@ -27,7 +27,7 @@ export class 家族メンバーSupabaseRepository implements 家族メンバーR
   }
 
   async ID別取得(ID: string): Promise<家族メンバー | null> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('family_members')
       .select('*')
@@ -45,7 +45,7 @@ export class 家族メンバーSupabaseRepository implements 家族メンバーR
     生年月日: Date,
     続柄: 家族メンバー続柄
   ): Promise<家族メンバー> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const id = crypto.randomUUID();
     const { data, error } = await supabase
       .from('family_members')
@@ -70,7 +70,7 @@ export class 家族メンバーSupabaseRepository implements 家族メンバーR
     生年月日: Date,
     続柄: 家族メンバー続柄
   ): Promise<家族メンバー> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('family_members')
       .update({
@@ -89,7 +89,7 @@ export class 家族メンバーSupabaseRepository implements 家族メンバーR
   }
 
   async 削除(ID: string): Promise<void> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { error } = await supabase
       .from('family_members')
       .delete()

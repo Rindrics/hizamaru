@@ -4,7 +4,7 @@ import type {
   ライフプラン家族メンバー,
 } from '../interfaces/lifePlanRepository';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getSupabaseClient } from '@/lib/supabase';
+import { getDbClient } from '@/lib/db';
 
 export class ライフプランSupabaseRepository implements ライフプランRepository {
   private mapToEntity(p: Record<string, unknown>): ライフプラン {
@@ -20,7 +20,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
   }
 
   async アカウント別取得(アカウントID: string): Promise<ライフプラン[]> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('life_plans')
       .select('*')
@@ -32,7 +32,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
   }
 
   async ID別取得(ID: string): Promise<ライフプラン | null> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('life_plans')
       .select('*')
@@ -85,7 +85,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
     説明: string | null,
     有効フラグ: boolean
   ): Promise<ライフプラン> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('life_plans')
       .update({
@@ -107,7 +107,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
     アカウントID: string,
     メインプランID: string
   ): Promise<void> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
 
     // Disable all plans in this account
     const { error: disableError } = await supabase
@@ -127,7 +127,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
   }
 
   async 削除(ID: string): Promise<void> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { error } = await supabase.from('life_plans').delete().eq('id', ID);
 
     if (error) throw error;
@@ -160,7 +160,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
   async ライフプランID別家族メンバー取得(
     lifePlanId: string
   ): Promise<ライフプラン家族メンバー[]> {
-    const supabase = getSupabaseClient();
+    const supabase = getDbClient();
     const { data, error } = await supabase
       .from('life_plan_family_members')
       .select('*')

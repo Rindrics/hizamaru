@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getDbServerClient } from '@/lib/db';
 import { 家族メンバーRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
 import FamilyMemberList from './_components/FamilyMemberList';
 
 export default async function FamilyPage() {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getDbServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
