@@ -48,6 +48,17 @@ export default async function EditLifePlanPage({ params }: Props) {
     .select('*')
     .eq('life_plan_id', id);
 
+  // Fetch hobby activities
+  const { data: hobbyActivities } = await supabase
+    .from('hobby_activities')
+    .select('*')
+    .eq('life_plan_id', id);
+
+  // Fetch annual costs for hobby activities
+  const { data: annualCosts } = await supabase
+    .from('hobby_activity_annual_costs')
+    .select('*');
+
   const actionWithId = ライフプラン更新.bind(null, id);
 
   return (
@@ -73,6 +84,8 @@ export default async function EditLifePlanPage({ params }: Props) {
             lifePlanId={id}
             familyMembers={familyMembers || []}
             incomeRecords={incomeRecords || []}
+            hobbyActivities={hobbyActivities || []}
+            annualCosts={annualCosts || []}
           />
         </div>
       </main>
