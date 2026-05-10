@@ -73,6 +73,34 @@ export class ライフプランSupabaseRepository implements ライフプランR
 
     if (error) throw error;
 
+    // Copy existing family members to this life plan
+    const { data: familyMembers, error: familyError } = await supabase
+      .from('family_members')
+      .select('*')
+      .eq('account_id', アカウントID);
+
+    if (familyError) throw familyError;
+
+    if (familyMembers && familyMembers.length > 0) {
+      const lifePlanFamilyMembers = familyMembers.map((member) => ({
+        id: `lp_fm_${crypto.randomUUID()}`,
+        life_plan_id: id,
+        family_member_id: member.id,
+        name: member.name,
+        relationship: member.relationship,
+        income: 0,
+      }));
+
+      const { error: insertError } = await supabase
+        .from('life_plan_family_members')
+        .insert(lifePlanFamilyMembers);
+
+      // Table might not exist yet, skip if error
+      if (insertError && insertError.code !== 'PGRST205') {
+        throw insertError;
+      }
+    }
+
     return this.mapToEntity(data);
   }
 
