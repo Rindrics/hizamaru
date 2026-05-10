@@ -351,11 +351,16 @@ export default function IncomeSection({
                                   <p className="text-gray-600">ボーナス</p>
                                   <p className="font-medium text-gray-900">
                                     {income.bonus_months > 0
-                                      ? `月給の${income.bonus_months}ヶ月分 (${income.bonus_payment_months
-                                          .split(',')
-                                          .filter(Boolean)
-                                          .map((m) => `${m}月`)
-                                          .join('・')})`
+                                      ? (() => {
+                                          const months = income.bonus_payment_months
+                                            .split(',')
+                                            .filter(Boolean)
+                                            .map((m) => `${m} 月`);
+                                          if (months.length === 1) {
+                                            return `月給の ${income.bonus_months} ヶ月分を${months[0]}に支給`;
+                                          }
+                                          return `月給の ${income.bonus_months} ヶ月分をそれぞれ ${months.join('と')} に支給`;
+                                        })()
                                       : 'なし'}
                                   </p>
                                 </div>
