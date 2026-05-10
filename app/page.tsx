@@ -1,10 +1,10 @@
 import { getSupabaseServerClient } from '@/lib/supabase-server';
-import { fetchDemoData, fetchUserData } from '@/app/actions/data';
+import { fetchUserData } from '@/app/actions/data';
 import type { 家族メンバー, ライフプラン, ライフイベント } from '@/types';
 import { logger } from '@/lib/logger';
 
-async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
-  logger.debug('DataDisplay: start', { urlShowDemo });
+async function DataDisplay() {
+  logger.debug('DataDisplay: start');
 
   const supabase = await getSupabaseServerClient();
   const {
@@ -13,27 +13,7 @@ async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
 
   logger.debug('DataDisplay: user auth check', { isAuthenticated: !!user });
 
-  // Get user's demo_mode preference if logged in
-  let showDemo = urlShowDemo;
-  if (user) {
-    logger.debug('DataDisplay: fetching user demo_mode preference', {
-      userId: user.id,
-    });
-    const { data: userData } = await supabase
-      .from('users')
-      .select('demo_mode')
-      .eq('id', user.id.toString())
-      .single();
-
-    if (userData !== null) {
-      showDemo = userData.demo_mode ?? urlShowDemo;
-      logger.debug('DataDisplay: demo_mode preference loaded', {
-        demoMode: showDemo,
-      });
-    }
-  }
-
-  if (!user && !showDemo) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gray-50">
         <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
@@ -56,26 +36,19 @@ async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
   let lifePlans: ライフプラン[] = [];
   let lifeEvents: ライフイベント[] = [];
 
-  if (showDemo) {
-    const data = await fetchDemoData();
+  try {
+    const data = await fetchUserData();
     familyMembers = data.familyMembers;
     lifePlans = data.lifePlans;
     lifeEvents = data.lifeEvents;
-  } else {
-    try {
-      const data = await fetchUserData();
-      familyMembers = data.familyMembers;
-      lifePlans = data.lifePlans;
-      lifeEvents = data.lifeEvents;
-    } catch (err) {
-      // User not authenticated or no data - show empty data
-      logger.debug('DataDisplay: failed to fetch user data', {
-        error: err instanceof Error ? err.message : String(err),
-      });
-      familyMembers = [];
-      lifePlans = [];
-      lifeEvents = [];
-    }
+  } catch (err) {
+    // Failed to fetch user data - show empty data
+    logger.debug('DataDisplay: failed to fetch user data', {
+      error: err instanceof Error ? err.message : String(err),
+    });
+    familyMembers = [];
+    lifePlans = [];
+    lifeEvents = [];
   }
 
   const sampleFamilyMembers = familyMembers;
@@ -193,13 +166,6 @@ async function DataDisplay({ showDemo: urlShowDemo }: { showDemo: boolean }) {
   );
 }
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const params = await searchParams;
-  const showDemo = params.demo === '1';
-
-  return <DataDisplay showDemo={showDemo} />;
+export default async function Home() {
+  return <DataDisplay />;
 }

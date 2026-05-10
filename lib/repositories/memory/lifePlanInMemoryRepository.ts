@@ -1,28 +1,12 @@
 import type { ライフプラン } from '@/types';
-import type { ライフプランRepository } from '../interfaces/lifePlanRepository';
+import type {
+  ライフプランRepository,
+  ライフプラン家族メンバー,
+} from '../interfaces/lifePlanRepository';
+import { 家族メンバーRepo } from '../index';
 
-const seedData: { [key: string]: ライフプラン[] } = {
-  'demo-account': [
-    {
-      ID: '1',
-      アカウントID: 'demo-account',
-      名前: 'Basic Scenario',
-      説明: 'Basic life plan scenario',
-      有効フラグ: true,
-      作成日: new Date('2024-01-01'),
-      更新日: new Date('2024-01-01'),
-    },
-    {
-      ID: '2',
-      アカウントID: 'demo-account',
-      名前: 'Comparison Scenario',
-      説明: 'Comparison life plan scenario',
-      有効フラグ: false,
-      作成日: new Date('2024-01-01'),
-      更新日: new Date('2024-01-01'),
-    },
-  ],
-};
+const seedData: { [key: string]: ライフプラン[] } = {};
+const lifePlanFamilyMembersData: ライフプラン家族メンバー[] = [];
 
 export class ライフプランInMemoryRepository implements ライフプランRepository {
   async アカウント別取得(アカウントID: string): Promise<ライフプラン[]> {
@@ -111,6 +95,21 @@ export class ライフプランInMemoryRepository implements ライフプランR
     for (const accountId of Object.keys(seedData)) {
       seedData[accountId] = seedData[accountId].filter((p) => p.ID !== ID);
     }
+    // Clean up associated family members
+    const index = lifePlanFamilyMembersData.findIndex(
+      (fm) => fm.life_plan_id === ID
+    );
+    if (index !== -1) {
+      lifePlanFamilyMembersData.splice(index, 1);
+    }
+  }
+
+  async ライフプランID別家族メンバー取得(
+    lifePlanId: string
+  ): Promise<ライフプラン家族メンバー[]> {
+    return lifePlanFamilyMembersData.filter(
+      (fm) => fm.life_plan_id === lifePlanId
+    );
   }
 
   async 複製(ID: string): Promise<ライフプラン> {

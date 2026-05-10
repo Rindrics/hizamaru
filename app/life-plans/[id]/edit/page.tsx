@@ -4,6 +4,7 @@ import { getSupabaseServerClient } from '@/lib/supabase-server';
 import { ライフプランRepo } from '@/lib/repositories';
 import { ライフプラン更新 } from '@/app/actions/lifePlans';
 import LifePlanForm from '../../_components/LifePlanForm';
+import IncomeSection from '../../_components/IncomeSection';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -37,6 +38,16 @@ export default async function EditLifePlanPage({ params }: Props) {
     notFound();
   }
 
+  // Fetch family members for this life plan
+  const familyMembers =
+    await ライフプランRepo.ライフプランID別家族メンバー取得(id);
+
+  // Fetch income records for all family members in this plan
+  const { data: incomeRecords } = await supabase
+    .from('income')
+    .select('*')
+    .eq('life_plan_id', id);
+
   const actionWithId = ライフプラン更新.bind(null, id);
 
   return (
@@ -57,6 +68,12 @@ export default async function EditLifePlanPage({ params }: Props) {
           </h1>
 
           <LifePlanForm action={actionWithId} defaultValues={plan} />
+
+          <IncomeSection
+            lifePlanId={id}
+            familyMembers={familyMembers || []}
+            incomeRecords={incomeRecords || []}
+          />
         </div>
       </main>
     </div>

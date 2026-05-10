@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Edit2, Trash2, Copy } from 'lucide-react';
+import { Trash2, Copy } from 'lucide-react';
 import type { ライフプラン } from '@/types';
 import {
   ライフプラン削除,
@@ -157,7 +156,8 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                 {plansToDisplay.map((plan) => (
                   <tr
                     key={plan.ID}
-                    className={`transition-all duration-500 ${
+                    onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                    className={`transition-all duration-500 cursor-pointer ${
                       highlightedPlanId === plan.ID
                         ? 'bg-blue-50 drop-shadow-md'
                         : 'hover:bg-gray-50'
@@ -188,13 +188,6 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                       />
                     </td>
                     <td className="px-6 py-4 text-sm space-x-3">
-                      <Link
-                        href={`/life-plans/${plan.ID}/edit`}
-                        className="text-primary hover:text-primary-hover inline-block"
-                        title="編集"
-                      >
-                        <Edit2 size={18} />
-                      </Link>
                       <button
                         onClick={() => handleDuplicateConfirm(plan.ID)}
                         className="text-primary hover:text-primary-hover inline-block"

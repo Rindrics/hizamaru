@@ -117,7 +117,8 @@ export type 収入 = 年別金額 & {
   ライフプランID: string;
   家族メンバーID: string;
   月給: number;
-  ボーナス額: number;
+  ボーナス月数: number;
+  ボーナス支給月: number[];
   想定昇給率: number;
 };
 
