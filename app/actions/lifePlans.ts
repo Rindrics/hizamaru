@@ -48,12 +48,23 @@ export async function ライフプラン追加(
       return { 成功: false, エラー: 'ライフプラン名は必須です' };
     }
 
+    const supabase = await getSupabaseServerClient();
     const plan = await ライフプランRepo.作成(accountId, 名前, 説明);
+
+    // Verify plan was created (handles any replication lag)
+    const { data: createdPlan } = await supabase
+      .from('life_plans')
+      .select('id')
+      .eq('id', plan.ID)
+      .single();
+
+    if (!createdPlan) {
+      throw new Error('Failed to verify created life plan');
+    }
 
     // Copy family members to the new life plan
     const familyMembers = await 家族メンバーRepo.アカウント別取得(accountId);
     if (familyMembers && familyMembers.length > 0) {
-      const supabase = await getSupabaseServerClient();
       const lifePlanFamilyMembers = familyMembers.map((member) => ({
         id: `lp_fm_${crypto.randomUUID()}`,
         life_plan_id: plan.ID,
@@ -176,13 +187,24 @@ export async function ライフプラン複製(id: string) {
   try {
     logger.debug('LifePlan: duplicate request', { planId: id });
 
+    const supabase = await getSupabaseServerClient();
     const newPlan = await ライフプランRepo.複製(id);
+
+    // Verify plan was created
+    const { data: createdPlan } = await supabase
+      .from('life_plans')
+      .select('id')
+      .eq('id', newPlan.ID)
+      .single();
+
+    if (!createdPlan) {
+      throw new Error('Failed to verify duplicated life plan');
+    }
 
     // Copy family members from original plan
     const originalMembers =
       await ライフプランRepo.ライフプランID別家族メンバー取得(id);
     if (originalMembers && originalMembers.length > 0) {
-      const supabase = await getSupabaseServerClient();
       const newMembers = originalMembers.map((member) => ({
         id: `lp_fm_${crypto.randomUUID()}`,
         life_plan_id: newPlan.ID,
