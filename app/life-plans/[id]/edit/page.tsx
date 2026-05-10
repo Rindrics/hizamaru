@@ -39,10 +39,7 @@ export default async function EditLifePlanPage({ params }: Props) {
   }
 
   // Fetch family members for this life plan
-  const { data: familyMembers } = await supabase
-    .from('life_plan_family_members')
-    .select('*')
-    .eq('life_plan_id', id);
+  const familyMembers = await ライフプランRepo.ライフプランID別家族メンバー取得(id);
 
   // Fetch income records for all family members in this plan
   const { data: incomeRecords } = await supabase

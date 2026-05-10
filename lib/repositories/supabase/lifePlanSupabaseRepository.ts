@@ -1,5 +1,5 @@
 import type { ライフプラン } from '@/types';
-import type { ライフプランRepository } from '../interfaces/lifePlanRepository';
+import type { ライフプランRepository, ライフプラン家族メンバー } from '../interfaces/lifePlanRepository';
 import { getSupabaseClient } from '@/lib/supabase';
 
 export class ライフプランSupabaseRepository implements ライフプランRepository {
@@ -72,34 +72,6 @@ export class ライフプランSupabaseRepository implements ライフプランR
       .single();
 
     if (error) throw error;
-
-    // Copy existing family members to this life plan
-    const { data: familyMembers, error: familyError } = await supabase
-      .from('family_members')
-      .select('*')
-      .eq('account_id', アカウントID);
-
-    if (familyError) throw familyError;
-
-    if (familyMembers && familyMembers.length > 0) {
-      const lifePlanFamilyMembers = familyMembers.map((member) => ({
-        id: `lp_fm_${crypto.randomUUID()}`,
-        life_plan_id: id,
-        family_member_id: member.id,
-        name: member.name,
-        relationship: member.relationship,
-        income: 0,
-      }));
-
-      const { error: insertError } = await supabase
-        .from('life_plan_family_members')
-        .insert(lifePlanFamilyMembers);
-
-      // Table might not exist yet, skip if error
-      if (insertError && insertError.code !== 'PGRST205') {
-        throw insertError;
-      }
-    }
 
     return this.mapToEntity(data);
   }
@@ -181,5 +153,17 @@ export class ライフプランSupabaseRepository implements ライフプランR
     if (error) throw error;
 
     return this.mapToEntity(data);
+  }
+
+  async ライフプランID別家族メンバー取得(lifePlanId: string): Promise<ライフプラン家族メンバー[]> {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('life_plan_family_members')
+      .select('*')
+      .eq('life_plan_id', lifePlanId);
+
+    if (error && error.code !== 'PGRST116') throw error;
+
+    return (data || []) as ライフプラン家族メンバー[];
   }
 }

@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
-import { ライフプランRepo } from '@/lib/repositories';
+import { ライフプランRepo, 家族メンバーRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
 
 async function getAccountId(): Promise<string> {
@@ -49,6 +49,29 @@ export async function ライフプラン追加(
     }
 
     const plan = await ライフプランRepo.作成(accountId, 名前, 説明);
+
+    // Copy family members to the new life plan
+    const familyMembers = await 家族メンバーRepo.アカウント別取得(accountId);
+    if (familyMembers && familyMembers.length > 0) {
+      const supabase = await getSupabaseServerClient();
+      const lifePlanFamilyMembers = familyMembers.map((member) => ({
+        id: `lp_fm_${crypto.randomUUID()}`,
+        life_plan_id: plan.ID,
+        family_member_id: member.ID,
+        name: member.名前,
+        relationship: member.続柄,
+        income: 0,
+      }));
+
+      const { error: insertError } = await supabase
+        .from('life_plan_family_members')
+        .insert(lifePlanFamilyMembers);
+
+      // Table might not exist yet, skip if error
+      if (insertError && insertError.code !== 'PGRST205') {
+        throw insertError;
+      }
+    }
 
     logger.info('Life plan created', {
       planId: plan.ID,
@@ -154,6 +177,28 @@ export async function ライフプラン複製(id: string) {
     logger.debug('LifePlan: duplicate request', { planId: id });
 
     const newPlan = await ライフプランRepo.複製(id);
+
+    // Copy family members from original plan
+    const originalMembers = await ライフプランRepo.ライフプランID別家族メンバー取得(id);
+    if (originalMembers && originalMembers.length > 0) {
+      const supabase = await getSupabaseServerClient();
+      const newMembers = originalMembers.map((member) => ({
+        id: `lp_fm_${crypto.randomUUID()}`,
+        life_plan_id: newPlan.ID,
+        family_member_id: member.family_member_id,
+        name: member.name,
+        relationship: member.relationship,
+        income: member.income,
+      }));
+
+      const { error: insertError } = await supabase
+        .from('life_plan_family_members')
+        .insert(newMembers);
+
+      if (insertError && insertError.code !== 'PGRST205') {
+        throw insertError;
+      }
+    }
 
     logger.info('Life plan duplicated', { planId: id, newPlanId: newPlan.ID });
 
