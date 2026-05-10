@@ -1,7 +1,11 @@
 'use server';
 
 import { getSupabaseServerClient } from '@/lib/supabase-server';
-import { ライフプランRepo, 家族メンバーRepo, ライフプランファミリーメンバーRepo } from '@/lib/repositories';
+import {
+  ライフプランRepo,
+  家族メンバーRepo,
+  ライフプランファミリーメンバーRepo,
+} from '@/lib/repositories';
 import { logger } from '@/lib/logger';
 
 /**

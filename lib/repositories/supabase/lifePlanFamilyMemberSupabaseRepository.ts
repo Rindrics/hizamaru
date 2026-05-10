@@ -5,9 +5,7 @@ import type {
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getSupabaseClient } from '@/lib/supabase';
 
-export class ライフプランファミリーメンバーSupabaseRepository
-  implements ライフプランファミリーメンバーRepository
-{
+export class ライフプランファミリーメンバーSupabaseRepository implements ライフプランファミリーメンバーRepository {
   async ライフプランID別取得(
     lifePlanId: string
   ): Promise<ライフプラン家族メンバー[]> {

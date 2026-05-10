@@ -6,9 +6,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 const lifePlanFamilyMembersData: ライフプラン家族メンバー[] = [];
 
-export class ライフプランファミリーメンバーInMemoryRepository
-  implements ライフプランファミリーメンバーRepository
-{
+export class ライフプランファミリーメンバーInMemoryRepository implements ライフプランファミリーメンバーRepository {
   async ライフプランID別取得(
     lifePlanId: string
   ): Promise<ライフプラン家族メンバー[]> {
