@@ -1,7 +1,7 @@
 'use server';
 
 import { getSupabaseServerClient } from '@/lib/supabase-server';
-import { ライフプランRepo, 家族メンバーRepo } from '@/lib/repositories';
+import { ライフプランRepo, 家族メンバーRepo, ライフプランファミリーメンバーRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
 
 /**
@@ -24,25 +24,29 @@ export async function createLifePlan(
   );
 
   // Step 2: アカウントの家族メンバーをこのライフプランにコピー
-  const familyMembers = await 家族メンバーRepo.アカウント別取得(accountId);
-  if (familyMembers && familyMembers.length > 0) {
-    const lifePlanFamilyMembers = familyMembers.map((member) => ({
-      id: `lp_fm_${crypto.randomUUID()}`,
-      life_plan_id: plan.ID,
-      family_member_id: member.ID,
-      name: member.名前,
-      relationship: member.続柄,
-      income: 0,
-    }));
+  try {
+    const familyMembers = await 家族メンバーRepo.アカウント別取得(accountId);
+    if (familyMembers && familyMembers.length > 0) {
+      const lifePlanFamilyMembers = familyMembers.map((member) => ({
+        id: `lp_fm_${crypto.randomUUID()}`,
+        life_plan_id: plan.ID,
+        family_member_id: member.ID,
+        name: member.名前,
+        relationship: member.続柄,
+        income: 0,
+      }));
 
-    const { error: insertError } = await supabase
-      .from('life_plan_family_members')
-      .insert(lifePlanFamilyMembers);
-
-    // テーブルが存在しない場合のエラーはスキップ
-    if (insertError && insertError.code !== 'PGRST205') {
-      throw insertError;
+      await ライフプランファミリーメンバーRepo.複数作成(
+        supabase,
+        lifePlanFamilyMembers
+      );
     }
+  } catch (err) {
+    // ファミリーメンバーのコピーに失敗しても、プラン作成は成功と見なす
+    logger.warn('Failed to copy family members during plan creation', {
+      planId: plan.ID,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 
   return plan;
@@ -59,25 +63,28 @@ export async function duplicateLifePlan(lifePlanId: string) {
   const newPlan = await ライフプランRepo.複製(supabase, lifePlanId);
 
   // Step 2: 元のプランの family members をこの複製プランにコピー
-  const originalMembers =
-    await ライフプランRepo.ライフプランID別家族メンバー取得(lifePlanId);
-  if (originalMembers && originalMembers.length > 0) {
-    const newMembers = originalMembers.map((member) => ({
-      id: `lp_fm_${crypto.randomUUID()}`,
-      life_plan_id: newPlan.ID,
-      family_member_id: member.family_member_id,
-      name: member.name,
-      relationship: member.relationship,
-      income: member.income,
-    }));
+  try {
+    const originalMembers =
+      await ライフプランファミリーメンバーRepo.ライフプランID別取得(lifePlanId);
+    if (originalMembers && originalMembers.length > 0) {
+      const newMembers = originalMembers.map((member) => ({
+        id: `lp_fm_${crypto.randomUUID()}`,
+        life_plan_id: newPlan.ID,
+        family_member_id: member.family_member_id,
+        name: member.name,
+        relationship: member.relationship,
+        income: member.income,
+      }));
 
-    const { error: insertError } = await supabase
-      .from('life_plan_family_members')
-      .insert(newMembers);
-
-    if (insertError && insertError.code !== 'PGRST205') {
-      throw insertError;
+      await ライフプランファミリーメンバーRepo.複数作成(supabase, newMembers);
     }
+  } catch (err) {
+    // ファミリーメンバーのコピーに失敗しても、プラン複製は成功と見なす
+    logger.warn('Failed to copy family members during plan duplication', {
+      originalPlanId: lifePlanId,
+      newPlanId: newPlan.ID,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 
   return newPlan;
