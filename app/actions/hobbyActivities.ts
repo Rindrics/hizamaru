@@ -194,15 +194,17 @@ export async function 年次費用追加(
       : null;
 
     const id = crypto.randomUUID();
-    const { error } = await supabase.from('hobby_activity_annual_costs').insert({
-      id,
-      hobby_activity_id: hobbyActivityId,
-      name,
-      amount,
-      start_year: startYear,
-      end_year: endYear,
-      times_per_year: timesPerYear,
-    });
+    const { error } = await supabase
+      .from('hobby_activity_annual_costs')
+      .insert({
+        id,
+        hobby_activity_id: hobbyActivityId,
+        name,
+        amount,
+        start_year: startYear,
+        end_year: endYear,
+        times_per_year: timesPerYear,
+      });
 
     if (error) {
       logger.error('Failed to create annual cost', {

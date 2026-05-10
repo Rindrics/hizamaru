@@ -7,11 +7,7 @@ import ConfirmDialog from '@/app/family/_components/ConfirmDialog';
 import IncomeForm from './IncomeForm';
 import HobbyActivityForm from './HobbyActivityForm';
 import AnnualCostForm from './AnnualCostForm';
-import {
-  収入追加,
-  収入更新,
-  収入削除,
-} from '@/app/actions/income';
+import { 収入追加, 収入更新, 収入削除 } from '@/app/actions/income';
 import {
   習い事追加,
   習い事更新,
@@ -81,8 +77,9 @@ export default function IncomeSection({
   annualCosts: initialAnnualCosts,
 }: Props) {
   const [incomeRecords, setIncomeRecords] = useState(initialIncomeRecords);
-  const [hobbyActivities, setHobbyActivities] =
-    useState(initialHobbyActivities);
+  const [hobbyActivities, setHobbyActivities] = useState(
+    initialHobbyActivities
+  );
   const [annualCosts, setAnnualCosts] = useState(initialAnnualCosts);
 
   const [addIncomeModal, setAddIncomeModal] = useState<{
@@ -137,7 +134,8 @@ export default function IncomeSection({
     prevState: unknown,
     formData: FormData
   ) => {
-    if (!editIncomeModal) return { 成功: false, エラー: 'エラーが発生しました' };
+    if (!editIncomeModal)
+      return { 成功: false, エラー: 'エラーが発生しました' };
 
     const result = await 収入更新(editIncomeModal.id, prevState, formData);
 
@@ -168,7 +166,10 @@ export default function IncomeSection({
 
     if (result?.成功 && result.データ) {
       setAddHobbyModal(null);
-      setHobbyActivities([...hobbyActivities, result.データ as HobbyActivityRow]);
+      setHobbyActivities([
+        ...hobbyActivities,
+        result.データ as HobbyActivityRow,
+      ]);
     }
 
     return result;
@@ -221,7 +222,12 @@ export default function IncomeSection({
   ) => {
     if (!editCostModal) return { 成功: false, エラー: 'エラーが発生しました' };
 
-    const result = await 年次費用更新(editCostModal.id, lifePlanId, prevState, formData);
+    const result = await 年次費用更新(
+      editCostModal.id,
+      lifePlanId,
+      prevState,
+      formData
+    );
 
     if (result?.成功 && result.データ) {
       setEditCostModal(null);
@@ -249,7 +255,9 @@ export default function IncomeSection({
     try {
       if (deleteConfirm.type === 'income') {
         await 収入削除(deleteConfirm.id);
-        setIncomeRecords(incomeRecords.filter((r) => r.id !== deleteConfirm.id));
+        setIncomeRecords(
+          incomeRecords.filter((r) => r.id !== deleteConfirm.id)
+        );
       } else if (deleteConfirm.type === 'hobby') {
         await 習い事削除(deleteConfirm.id);
         setHobbyActivities(
@@ -287,9 +295,7 @@ export default function IncomeSection({
                   className="p-4 bg-gray-50 rounded-lg border border-gray-200"
                 >
                   <div className="mb-4">
-                    <p className="font-semibold text-gray-900">
-                      {member.name}
-                    </p>
+                    <p className="font-semibold text-gray-900">{member.name}</p>
                     <p className="text-sm text-gray-600">
                       {member.relationship}
                     </p>
@@ -586,7 +592,11 @@ export default function IncomeSection({
       <FamilyMemberModal
         isOpen={!!addIncomeModal}
         onClose={() => setAddIncomeModal(null)}
-        title={addIncomeModal ? `${addIncomeModal.memberName}の収入を追加` : '収入を追加'}
+        title={
+          addIncomeModal
+            ? `${addIncomeModal.memberName}の収入を追加`
+            : '収入を追加'
+        }
       >
         <IncomeForm action={addIncomeActionWithState} />
       </FamilyMemberModal>
@@ -605,7 +615,11 @@ export default function IncomeSection({
       <FamilyMemberModal
         isOpen={!!addHobbyModal}
         onClose={() => setAddHobbyModal(null)}
-        title={addHobbyModal ? `${addHobbyModal.memberName}の習い事を追加` : '習い事を追加'}
+        title={
+          addHobbyModal
+            ? `${addHobbyModal.memberName}の習い事を追加`
+            : '習い事を追加'
+        }
       >
         <HobbyActivityForm action={addHobbyActionWithState} />
       </FamilyMemberModal>
@@ -624,7 +638,11 @@ export default function IncomeSection({
       <FamilyMemberModal
         isOpen={!!addCostModal}
         onClose={() => setAddCostModal(null)}
-        title={addCostModal ? `${addCostModal.activityName}の年次費用を追加` : '年次費用を追加'}
+        title={
+          addCostModal
+            ? `${addCostModal.activityName}の年次費用を追加`
+            : '年次費用を追加'
+        }
       >
         <AnnualCostForm action={addCostActionWithState} />
       </FamilyMemberModal>

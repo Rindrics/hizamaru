@@ -15,14 +15,14 @@ interface HobbyActivity {
 }
 
 interface Props {
-  action: (prevState: unknown, formData: FormData) => Promise<{ 成功?: boolean; エラー?: string } | null | undefined>;
+  action: (
+    prevState: unknown,
+    formData: FormData
+  ) => Promise<{ 成功?: boolean; エラー?: string } | null | undefined>;
   defaultValues?: HobbyActivity;
 }
 
-export default function HobbyActivityForm({
-  action,
-  defaultValues,
-}: Props) {
+export default function HobbyActivityForm({ action, defaultValues }: Props) {
   const [state, formAction, isPending] = useActionState(action, null);
 
   const currentYear = new Date().getFullYear();
