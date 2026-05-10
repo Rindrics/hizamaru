@@ -94,9 +94,12 @@ export async function ライフプラン追加(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    logger.error('Failed to create life plan', { error: message });
-    return { 成功: false, エラー: message };
+    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to create life plan', {
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return { 成功: false, エラー: 'ライフプラン作成に失敗しました' };
   }
 }
 
@@ -136,9 +139,13 @@ export async function ライフプラン更新(
     if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
       throw err;
     }
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    logger.error('Failed to update life plan', { error: message });
-    return { 成功: false, エラー: message };
+    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to update life plan', {
+      planId: id,
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return { 成功: false, エラー: 'ライフプラン更新に失敗しました' };
   }
 }
 
@@ -227,9 +234,13 @@ export async function ライフプラン複製(id: string) {
 
     return { 成功: true };
   } catch (err) {
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    logger.error('Failed to duplicate life plan', { error: message });
-    return { 成功: false, エラー: message };
+    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to duplicate life plan', {
+      originalPlanId: id,
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return { 成功: false, エラー: 'ライフプラン複製に失敗しました' };
   }
 }
 

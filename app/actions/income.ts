@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { logger } from '@/lib/logger';
 
 async function getAccountId(): Promise<string> {
   const supabase = await getSupabaseServerClient();
@@ -99,10 +100,16 @@ export async function 収入追加(
       },
     };
   } catch (err) {
-    console.error('Error adding income:', err);
+    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to add income', {
+      lifePlanId,
+      familyMemberId,
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
     return {
       成功: false,
-      エラー: err instanceof Error ? err.message : '収入の追加に失敗しました',
+      エラー: '収入の追加に失敗しました',
     };
   }
 }
@@ -179,10 +186,15 @@ export async function 収入更新(
       },
     };
   } catch (err) {
-    console.error('Error updating income:', err);
+    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to update income', {
+      incomeId,
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
     return {
       成功: false,
-      エラー: err instanceof Error ? err.message : '収入の更新に失敗しました',
+      エラー: '収入の更新に失敗しました',
     };
   }
 }
@@ -217,7 +229,12 @@ export async function 収入削除(incomeId: string): Promise<void> {
 
     revalidatePath(`/life-plans/${income.life_plan_id}/edit`);
   } catch (err) {
-    console.error('Error deleting income:', err);
-    throw err;
+    const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to delete income', {
+      incomeId,
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    throw new Error('収入の削除に失敗しました');
   }
 }

@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { logger } from '@/lib/logger';
 
 export async function login(formData: FormData) {
   const supabase = await getSupabaseServerClient();
@@ -12,7 +13,11 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    logger.error('Login failed', {
+      errorCode: error.status,
+      errorMessage: error.message,
+    });
+    return { error: 'ログインに失敗しました' };
   }
 
   // Check if user record exists in public.users
@@ -36,7 +41,11 @@ export async function login(formData: FormData) {
     });
 
     if (accountError) {
-      return { error: 'Failed to initialize user account' };
+      logger.error('Failed to create account', {
+        userId: data.user!.id,
+        error: accountError.message,
+      });
+      return { error: 'アカウント初期化に失敗しました' };
     }
 
     // Create user record
@@ -47,7 +56,12 @@ export async function login(formData: FormData) {
     });
 
     if (createUserError) {
-      return { error: 'Failed to create user record' };
+      logger.error('Failed to create user record', {
+        userId: data.user!.id,
+        accountId,
+        error: createUserError.message,
+      });
+      return { error: 'ユーザー登録に失敗しました' };
     }
   }
 
