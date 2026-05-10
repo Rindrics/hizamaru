@@ -24,10 +24,17 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-      - name: Deploy to Vercel
-        uses: vercel/action@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          production: true
+          node-version: '20'
+
+      - name: Deploy and promote to production
+        run: |
+          npm install -g vercel
+          DEPLOYMENT=$(vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }})
+          echo "Deployment URL: $DEPLOYMENT"
+          vercel promote $DEPLOYMENT --token ${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
