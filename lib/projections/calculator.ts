@@ -3,7 +3,7 @@ import type { 年次予測 } from '@/types';
 interface 年別月給 {
   年: number;
   月給: number;
-  ボーナス額?: number;
+  ボーナス月数?: number;
 }
 
 interface 計算入力 {
@@ -33,7 +33,7 @@ export function 年次予測を計算(入力: 計算入力): 年次予測[] {
     }
 
     const 月給 = 該当する給与情報.月給;
-    const ボーナス額 = 該当する給与情報.ボーナス額 ?? 0;
+    const ボーナス額 = 月給 * (該当する給与情報.ボーナス月数 ?? 0);
 
     const 年間給与 = 月給 * 12;
     const 年収 = 年間給与 + ボーナス額;
