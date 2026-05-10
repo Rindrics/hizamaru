@@ -64,7 +64,9 @@ export async function fetchUserData() {
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : JSON.stringify(error);
-    logger.error('fetchUserData: failed to fetch data', { error: errorMessage });
+    logger.error('fetchUserData: failed to fetch data', {
+      error: errorMessage,
+    });
     throw new Error(`Failed to fetch data: ${errorMessage}`);
   }
 }
