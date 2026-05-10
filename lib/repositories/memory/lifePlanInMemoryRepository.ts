@@ -1,5 +1,8 @@
 import type { ライフプラン } from '@/types';
-import type { ライフプランRepository, ライフプラン家族メンバー } from '../interfaces/lifePlanRepository';
+import type {
+  ライフプランRepository,
+  ライフプラン家族メンバー,
+} from '../interfaces/lifePlanRepository';
 import { 家族メンバーRepo } from '../index';
 
 const seedData: { [key: string]: ライフプラン[] } = {};
@@ -93,14 +96,20 @@ export class ライフプランInMemoryRepository implements ライフプランR
       seedData[accountId] = seedData[accountId].filter((p) => p.ID !== ID);
     }
     // Clean up associated family members
-    const index = lifePlanFamilyMembersData.findIndex((fm) => fm.life_plan_id === ID);
+    const index = lifePlanFamilyMembersData.findIndex(
+      (fm) => fm.life_plan_id === ID
+    );
     if (index !== -1) {
       lifePlanFamilyMembersData.splice(index, 1);
     }
   }
 
-  async ライフプランID別家族メンバー取得(lifePlanId: string): Promise<ライフプラン家族メンバー[]> {
-    return lifePlanFamilyMembersData.filter((fm) => fm.life_plan_id === lifePlanId);
+  async ライフプランID別家族メンバー取得(
+    lifePlanId: string
+  ): Promise<ライフプラン家族メンバー[]> {
+    return lifePlanFamilyMembersData.filter(
+      (fm) => fm.life_plan_id === lifePlanId
+    );
   }
 
   async 複製(ID: string): Promise<ライフプラン> {

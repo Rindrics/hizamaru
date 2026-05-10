@@ -179,7 +179,8 @@ export async function ライフプラン複製(id: string) {
     const newPlan = await ライフプランRepo.複製(id);
 
     // Copy family members from original plan
-    const originalMembers = await ライフプランRepo.ライフプランID別家族メンバー取得(id);
+    const originalMembers =
+      await ライフプランRepo.ライフプランID別家族メンバー取得(id);
     if (originalMembers && originalMembers.length > 0) {
       const supabase = await getSupabaseServerClient();
       const newMembers = originalMembers.map((member) => ({

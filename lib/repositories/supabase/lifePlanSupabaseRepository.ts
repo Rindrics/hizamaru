@@ -1,5 +1,8 @@
 import type { ライフプラン } from '@/types';
-import type { ライフプランRepository, ライフプラン家族メンバー } from '../interfaces/lifePlanRepository';
+import type {
+  ライフプランRepository,
+  ライフプラン家族メンバー,
+} from '../interfaces/lifePlanRepository';
 import { getSupabaseClient } from '@/lib/supabase';
 
 export class ライフプランSupabaseRepository implements ライフプランRepository {
@@ -155,7 +158,9 @@ export class ライフプランSupabaseRepository implements ライフプランR
     return this.mapToEntity(data);
   }
 
-  async ライフプランID別家族メンバー取得(lifePlanId: string): Promise<ライフプラン家族メンバー[]> {
+  async ライフプランID別家族メンバー取得(
+    lifePlanId: string
+  ): Promise<ライフプラン家族メンバー[]> {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('life_plan_family_members')

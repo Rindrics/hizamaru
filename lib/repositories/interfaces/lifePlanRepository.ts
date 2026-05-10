@@ -26,5 +26,7 @@ export interface ライフプランRepository {
   複製(ID: string): Promise<ライフプラン>;
   メインプラン設定(アカウントID: string, メインプランID: string): Promise<void>;
   削除(ID: string): Promise<void>;
-  ライフプランID別家族メンバー取得(lifePlanId: string): Promise<ライフプラン家族メンバー[]>;
+  ライフプランID別家族メンバー取得(
+    lifePlanId: string
+  ): Promise<ライフプラン家族メンバー[]>;
 }
