@@ -192,7 +192,7 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                             type: 'setMain',
                           });
                         }}
-                        className="w-4 h-4"
+                        className="w-4 h-4 accent-primary"
                       />
                     </td>
                     <td
