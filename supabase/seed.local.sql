@@ -42,14 +42,24 @@ insert into life_plan_family_members (id, life_plan_id, family_member_id, name, 
   ('lp_fm_plan2_amaterasu', 'plan-2', 'amaterasu', 'アマテラス', '長女', 0);
 
 -- Income records for plan-1
-insert into income (id, life_plan_id, family_member_id, monthly_salary, bonus_months, bonus_payment_months, expected_raise_rate, start_year) values
-  ('income-1', 'plan-1', 'izanagi', 600000, 2.5, '6,12', 0.02, 2024),
-  ('income-2', 'plan-1', 'izanami', 400000, 2.0, '6,12', 0.015, 2024);
+insert into income_records (id, life_plan_id, family_member_id, name) values
+  ('income-1', 'plan-1', 'izanagi', '本業'),
+  ('income-2', 'plan-1', 'izanami', '本業');
+
+-- Income terms for plan-1
+insert into income_terms (id, income_record_id, monthly_salary, bonus_months, bonus_payment_months, expected_raise_rate, start_year) values
+  ('income-term-1', 'income-1', 600000, 2.5, '6,12', 0.02, 2024),
+  ('income-term-2', 'income-2', 400000, 2.0, '6,12', 0.015, 2024);
 
 -- Income records for plan-2
-insert into income (id, life_plan_id, family_member_id, monthly_salary, bonus_months, bonus_payment_months, expected_raise_rate, start_year) values
-  ('income-3', 'plan-2', 'izanagi', 620000, 2.5, '6,12', 0.02, 2024),
-  ('income-4', 'plan-2', 'izanami', 400000, 2.0, '6,12', 0.015, 2024);
+insert into income_records (id, life_plan_id, family_member_id, name) values
+  ('income-3', 'plan-2', 'izanagi', '本業'),
+  ('income-4', 'plan-2', 'izanami', '本業');
+
+-- Income terms for plan-2
+insert into income_terms (id, income_record_id, monthly_salary, bonus_months, bonus_payment_months, expected_raise_rate, start_year) values
+  ('income-term-3', 'income-3', 620000, 2.5, '6,12', 0.02, 2024),
+  ('income-term-4', 'income-4', 400000, 2.0, '6,12', 0.015, 2024);
 
 -- Life events
 insert into life_events (id, life_plan_id, event_type, event_year, family_member_id) values

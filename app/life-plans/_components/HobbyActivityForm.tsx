@@ -7,9 +7,6 @@ interface HobbyActivity {
   life_plan_id: string;
   family_member_id: string;
   name: string;
-  monthly_fee: number;
-  start_year: number;
-  end_year: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -24,9 +21,6 @@ interface Props {
 
 export default function HobbyActivityForm({ action, defaultValues }: Props) {
   const [state, formAction, isPending] = useActionState(action, null);
-
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 51 }, (_, i) => currentYear - 10 + i);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -48,62 +42,6 @@ export default function HobbyActivityForm({ action, defaultValues }: Props) {
           className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-black"
           placeholder="ピアノ、水泳など"
         />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            月謝（円）
-          </label>
-          <input
-            type="number"
-            name="monthly_fee"
-            required
-            min="0"
-            step="1000"
-            defaultValue={defaultValues?.monthly_fee ?? ''}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-black"
-          />
-        </div>
-        <div />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            開始年
-          </label>
-          <select
-            name="start_year"
-            required
-            defaultValue={defaultValues?.start_year ?? ''}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-black"
-          >
-            <option value="">選択</option>
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}年
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            終了年（任意）
-          </label>
-          <select
-            name="end_year"
-            defaultValue={defaultValues?.end_year ?? ''}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-black"
-          >
-            <option value="">継続中</option>
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}年
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
