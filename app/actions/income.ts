@@ -158,9 +158,7 @@ export async function 収入更新(
   }
 }
 
-export async function 収入削除(
-  incomeRecordId: string
-): Promise<void> {
+export async function 収入削除(incomeRecordId: string): Promise<void> {
   try {
     const accountId = await getAccountId();
     const supabase = await getDbServerClient();

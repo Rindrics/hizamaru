@@ -48,9 +48,7 @@ export default async function EditLifePlanPage({ params }: Props) {
     .select('*')
     .eq('life_plan_id', id);
 
-  const { data: incomeTerms } = await supabase
-    .from('income_terms')
-    .select('*');
+  const { data: incomeTerms } = await supabase.from('income_terms').select('*');
 
   // Fetch hobby activities and terms
   const { data: hobbyActivities } = await supabase

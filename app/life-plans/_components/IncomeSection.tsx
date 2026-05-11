@@ -128,9 +128,8 @@ export default function IncomeSection({
     recordId: string;
     recordName: string;
   } | null>(null);
-  const [editIncomeTermModal, setEditIncomeTermModal] = useState<IncomeTerm | null>(
-    null
-  );
+  const [editIncomeTermModal, setEditIncomeTermModal] =
+    useState<IncomeTerm | null>(null);
   const [addHobbyModal, setAddHobbyModal] = useState<{
     memberId: string;
     memberName: string;
@@ -139,14 +138,15 @@ export default function IncomeSection({
     activityId: string;
     activityName: string;
   } | null>(null);
-  const [editHobbyTermModal, setEditHobbyTermModal] = useState<HobbyActivityTerm | null>(
-    null
-  );
+  const [editHobbyTermModal, setEditHobbyTermModal] =
+    useState<HobbyActivityTerm | null>(null);
   const [addCostModal, setAddCostModal] = useState<{
     activityId: string;
     activityName: string;
   } | null>(null);
-  const [editCostModal, setEditCostModal] = useState<AnnualCostRow | null>(null);
+  const [editCostModal, setEditCostModal] = useState<AnnualCostRow | null>(
+    null
+  );
   const [deleteConfirm, setDeleteConfirm] = useState<{
     id: string;
     label: string;
@@ -183,7 +183,8 @@ export default function IncomeSection({
     prevState: unknown,
     formData: FormData
   ) => {
-    if (!editIncomeModal) return { 成功: false, エラー: 'エラーが発生しました' };
+    if (!editIncomeModal)
+      return { 成功: false, エラー: 'エラーが発生しました' };
 
     const result = await 収入更新(editIncomeModal.id, prevState, formData);
 
@@ -192,9 +193,7 @@ export default function IncomeSection({
       const updatedData = result.データ as { name: string | null };
       setIncomeRecords(
         incomeRecords.map((r) =>
-          r.id === editIncomeModal.id
-            ? { ...r, name: updatedData.name }
-            : r
+          r.id === editIncomeModal.id ? { ...r, name: updatedData.name } : r
         )
       );
     }
@@ -231,7 +230,11 @@ export default function IncomeSection({
     if (!editIncomeTermModal)
       return { 成功: false, エラー: 'エラーが発生しました' };
 
-    const result = await 収入期間更新(editIncomeTermModal.id, prevState, formData);
+    const result = await 収入期間更新(
+      editIncomeTermModal.id,
+      prevState,
+      formData
+    );
 
     if (result?.成功 && result.データ) {
       setEditIncomeTermModal(null);
@@ -308,7 +311,9 @@ export default function IncomeSection({
       setEditHobbyTermModal(null);
       setHobbyActivityTerms(
         hobbyActivityTerms.map((t) =>
-          t.id === editHobbyTermModal.id ? (result.データ as HobbyActivityTerm) : t
+          t.id === editHobbyTermModal.id
+            ? (result.データ as HobbyActivityTerm)
+            : t
         )
       );
     }
@@ -570,8 +575,8 @@ export default function IncomeSection({
                                             </p>
                                             <p className="font-medium text-gray-900">
                                               {(
-                                                (term.expected_raise_rate || 0) *
-                                                100
+                                                (term.expected_raise_rate ||
+                                                  0) * 100
                                               ).toFixed(1)}
                                               %
                                             </p>
@@ -618,8 +623,7 @@ export default function IncomeSection({
                                   onClick={() =>
                                     setAddIncomeTermModal({
                                       recordId: record.id,
-                                      recordName:
-                                        record.name || '収入グループ',
+                                      recordName: record.name || '収入グループ',
                                     })
                                   }
                                   className="text-xs text-primary hover:text-primary-hover inline-flex items-center gap-1"

@@ -273,7 +273,9 @@ export async function 習い事月謝更新(
   }
 }
 
-export async function 習い事月謝削除(hobbyActivityTermId: string): Promise<void> {
+export async function 習い事月謝削除(
+  hobbyActivityTermId: string
+): Promise<void> {
   try {
     const accountId = await getAccountId();
     const supabase = await getDbServerClient();
