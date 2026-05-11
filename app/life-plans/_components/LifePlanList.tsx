@@ -4,8 +4,8 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Copy, Edit2 } from 'lucide-react';
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -18,7 +18,6 @@ import {
   ライフプラン削除,
   ライフプランをメインにする,
   ライフプラン複製,
-  ライフプラン一覧取得,
 } from '@/app/actions/lifePlans';
 import FamilyMemberModal from '@/app/family/_components/FamilyMemberModal';
 import LifePlanForm from './LifePlanForm';
@@ -39,9 +38,6 @@ interface Props {
 export default function LifePlanList({
   plansWithProjections: initialPlansWithProjections,
 }: Props) {
-  const [displayPlans, setDisplayPlans] = useState<
-    LifePlanWithProjection[] | null
-  >(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     id: string;
@@ -60,11 +56,9 @@ export default function LifePlanList({
   const { toasts, remove, info, success } = useToast();
   const router = useRouter();
 
-  const plansToDisplay =
-    displayPlans ||
-    [...initialPlansWithProjections].sort(
-      (a, b) => (b.plan.有効フラグ ? 1 : 0) - (a.plan.有効フラグ ? 1 : 0)
-    );
+  const plansToDisplay = [...initialPlansWithProjections].sort(
+    (a, b) => (b.plan.有効フラグ ? 1 : 0) - (a.plan.有効フラグ ? 1 : 0)
+  );
 
   const handleAddClose = () => {
     setIsAddOpen(false);
@@ -122,9 +116,8 @@ export default function LifePlanList({
         await ライフプラン削除(deleteConfirm.id);
         success('削除完了', 1.0, 'completed');
       }
-      const updatedPlans = await ライフプラン一覧取得();
-      setDisplayPlans(updatedPlans);
       setHighlightedPlanId(null);
+      setTimeout(() => router.refresh(), 2500);
     } catch (err) {
       console.error('Error:', err);
     } finally {
@@ -191,7 +184,7 @@ export default function LifePlanList({
                 {projections.length > 0 && (
                   <div className="mb-4 -mx-4 px-4">
                     <ResponsiveContainer width="100%" height={150}>
-                      <LineChart data={projections}>
+                      <BarChart data={projections}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
                           dataKey="year"
@@ -205,14 +198,12 @@ export default function LifePlanList({
                             border: '1px solid #ccc',
                           }}
                         />
-                        <Line
-                          type="monotone"
+                        <Bar
                           dataKey="totalAssets"
-                          stroke="var(--color-primary)"
-                          dot={false}
+                          fill="var(--color-primary)"
                           isAnimationActive={false}
                         />
-                      </LineChart>
+                      </BarChart>
                     </ResponsiveContainer>
                   </div>
                 )}
