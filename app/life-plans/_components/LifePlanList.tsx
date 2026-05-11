@@ -200,7 +200,9 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
-                        onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                        onClick={() =>
+                          router.push(`/life-plans/${plan.ID}/edit`)
+                        }
                         className="text-primary hover:text-primary-hover inline-block"
                         title="編集"
                       >
