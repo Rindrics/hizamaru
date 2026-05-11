@@ -187,7 +187,10 @@ export default function LifePlanList({
                       <ComposedChart
                         data={projections.map((d) => ({
                           ...d,
-                          hiddenIncome: Math.max(0, d.totalExpense - d.totalIncome),
+                          hiddenIncome: Math.max(
+                            0,
+                            d.totalExpense - d.totalIncome
+                          ),
                         }))}
                         barCategoryGap="-100%"
                         margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
