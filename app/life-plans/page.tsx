@@ -2,9 +2,17 @@ import { redirect } from 'next/navigation';
 import { getDbServerClient } from '@/lib/db';
 import { ライフプランRepo } from '@/lib/repositories';
 import { logger } from '@/lib/logger';
+import { 年次予測計算 } from '@/app/actions/projections';
 import LifePlanList from './_components/LifePlanList';
+import type { ProjectionYear } from '@/lib/projections/types';
+import type { ライフプラン } from '@/types';
 
 export const revalidate = 0;
+
+interface LifePlanWithProjection {
+  plan: ライフプラン;
+  projections: ProjectionYear[];
+}
 
 export default async function LifePlansPage() {
   const supabase = await getDbServerClient();
@@ -52,6 +60,16 @@ export default async function LifePlansPage() {
     redirect('/login');
   }
 
+  const plansWithProjections: LifePlanWithProjection[] = await Promise.all(
+    plans.map(async (plan) => {
+      const result = await 年次予測計算(plan.ID);
+      return {
+        plan,
+        projections: result.データ || [],
+      };
+    })
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -59,7 +77,7 @@ export default async function LifePlansPage() {
           <h1 className="text-3xl font-bold text-gray-900">ライフプラン管理</h1>
         </div>
 
-        <LifePlanList plans={plans} />
+        <LifePlanList plansWithProjections={plansWithProjections} />
       </main>
     </div>
   );

@@ -3,7 +3,9 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Copy, Edit2 } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { ライフプラン } from '@/types';
+import type { ProjectionYear } from '@/lib/projections/types';
 import {
   ライフプラン削除,
   ライフプランをメインにする,
@@ -17,12 +19,17 @@ import { ライフプラン追加 } from '@/app/actions/lifePlans';
 import Toast from '@/app/_components/Toast';
 import { useToast } from '@/lib/hooks/useToast';
 
-interface Props {
-  plans: ライフプラン[];
+interface LifePlanWithProjection {
+  plan: ライフプラン;
+  projections: ProjectionYear[];
 }
 
-export default function LifePlanList({ plans: initialPlans }: Props) {
-  const [displayPlans, setDisplayPlans] = useState<ライフプラン[] | null>(null);
+interface Props {
+  plansWithProjections: LifePlanWithProjection[];
+}
+
+export default function LifePlanList({ plansWithProjections: initialPlansWithProjections }: Props) {
+  const [displayPlans, setDisplayPlans] = useState<LifePlanWithProjection[] | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     id: string;
@@ -43,8 +50,8 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
 
   const plansToDisplay =
     displayPlans ||
-    [...initialPlans].sort(
-      (a, b) => (b.有効フラグ ? 1 : 0) - (a.有効フラグ ? 1 : 0)
+    [...initialPlansWithProjections].sort(
+      (a, b) => (b.plan.有効フラグ ? 1 : 0) - (a.plan.有効フラグ ? 1 : 0)
     );
 
   const handleAddClose = () => {
@@ -60,16 +67,16 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
   };
 
   const handleDeleteConfirm = (planId: string) => {
-    const plan = plansToDisplay.find((p) => p.ID === planId);
-    if (plan) {
-      setDeleteConfirm({ id: planId, name: plan.名前, type: 'delete' });
+    const planData = plansToDisplay.find((p) => p.plan.ID === planId);
+    if (planData) {
+      setDeleteConfirm({ id: planId, name: planData.plan.名前, type: 'delete' });
     }
   };
 
   const handleDuplicateConfirm = (planId: string) => {
-    const plan = plansToDisplay.find((p) => p.ID === planId);
-    if (plan) {
-      setDuplicateConfirm({ id: planId, name: plan.名前 });
+    const planData = plansToDisplay.find((p) => p.plan.ID === planId);
+    if (planData) {
+      setDuplicateConfirm({ id: planId, name: planData.plan.名前 });
     }
   };
 
@@ -136,7 +143,7 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
               isLoading ? 'opacity-50 pointer-events-none' : ''
             }`}
           >
-            {plansToDisplay.map((plan) => (
+            {plansToDisplay.map(({ plan, projections }) => (
               <div
                 key={plan.ID}
                 className={`rounded-lg border-2 p-4 transition-all duration-300 ${
@@ -164,6 +171,35 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                 >
                   {plan.説明 || '-'}
                 </p>
+
+                {projections.length > 0 && (
+                  <div className="mb-4 -mx-4 px-4">
+                    <ResponsiveContainer width="100%" height={150}>
+                      <LineChart data={projections}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="year"
+                          tick={{ fontSize: 12 }}
+                          width={30}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 12 }}
+                          width={60}
+                        />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="totalAssets"
+                          stroke="var(--color-primary)"
+                          dot={false}
+                          isAnimationActive={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
 
                 <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
                   <button
