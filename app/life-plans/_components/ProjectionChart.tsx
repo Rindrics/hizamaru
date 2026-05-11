@@ -13,18 +13,27 @@ import {
 } from 'recharts';
 import type { ProjectionYear } from '@/lib/projections/types';
 import { 年次予測計算 } from '@/app/actions/projections';
+import {
+  CHART_CONFIG,
+  CHART_LEFT_MARGIN,
+} from '../_constants/chartConfig';
 
 interface Props {
   projections: ProjectionYear[];
   lifePlanId: string;
 }
 
-const AGE_LABEL_WIDTH = 100;
-const YEAR_COLUMN_WIDTH = 16;
-const Y_AXIS_WIDTH = 80;
-const CHART_LEFT_MARGIN = AGE_LABEL_WIDTH - Y_AXIS_WIDTH;
-const CHART_RIGHT_MARGIN = 30;
-const MIN_CHART_WIDTH = 560;
+const {
+  AGE_LABEL_WIDTH,
+  YEAR_COLUMN_WIDTH,
+  Y_AXIS_WIDTH,
+  CHART_RIGHT_MARGIN,
+  MIN_CHART_WIDTH,
+  BAR_CATEGORY_GAP,
+  BAR_GAP,
+  CHART_MARGIN_TOP,
+  CHART_MARGIN_BOTTOM,
+} = CHART_CONFIG;
 
 export default function ProjectionChart({
   projections: initialProjections,
@@ -186,13 +195,13 @@ export default function ProjectionChart({
           <ResponsiveContainer width={contentWidth} height={300}>
             <ComposedChart
               data={data}
-              barCategoryGap={0}
-              barGap="-100%"
+              barCategoryGap={BAR_CATEGORY_GAP}
+              barGap={BAR_GAP}
               margin={{
-                top: 20,
+                top: CHART_MARGIN_TOP,
                 right: CHART_RIGHT_MARGIN,
                 left: CHART_LEFT_MARGIN,
-                bottom: 0,
+                bottom: CHART_MARGIN_BOTTOM,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />

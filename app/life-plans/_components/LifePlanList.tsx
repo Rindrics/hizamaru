@@ -25,6 +25,10 @@ import ConfirmDialog from '@/app/family/_components/ConfirmDialog';
 import { ライフプラン追加 } from '@/app/actions/lifePlans';
 import Toast from '@/app/_components/Toast';
 import { useToast } from '@/lib/hooks/useToast';
+import {
+  CHART_CONFIG,
+  CHART_LEFT_MARGIN,
+} from '../_constants/chartConfig';
 
 interface LifePlanWithProjection {
   plan: ライフプラン;
@@ -186,8 +190,14 @@ export default function LifePlanList({
                             d.totalExpense - d.totalIncome
                           ),
                         }))}
-                        barCategoryGap="-100%"
-                        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+                        barCategoryGap={CHART_CONFIG.BAR_CATEGORY_GAP}
+                        barGap={CHART_CONFIG.BAR_GAP}
+                        margin={{
+                          top: CHART_CONFIG.CHART_MARGIN_TOP,
+                          right: CHART_CONFIG.CHART_RIGHT_MARGIN,
+                          left: CHART_LEFT_MARGIN,
+                          bottom: CHART_CONFIG.CHART_MARGIN_BOTTOM,
+                        }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
