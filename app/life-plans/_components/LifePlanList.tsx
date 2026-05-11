@@ -222,10 +222,29 @@ export default function LifePlanList({
                   </div>
                 )}
 
-                <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                <div className="flex gap-2 pt-2 border-t border-gray-100">
+                  {plan.有効フラグ ? (
+                    <div className="inline-block bg-primary text-primary-text text-xs font-semibold px-2 py-1 rounded">
+                      メインプラン
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setDeleteConfirm({
+                          id: plan.ID,
+                          name: plan.名前,
+                          type: 'setMain',
+                        });
+                      }}
+                      className="text-sm text-primary hover:text-primary-hover font-medium"
+                    >
+                      メインに設定
+                    </button>
+                  )}
+
                   <button
                     onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
-                    className="text-primary hover:text-primary-hover inline-block p-1"
+                    className="ml-auto text-primary hover:text-primary-hover inline-block p-1"
                     title="編集"
                   >
                     <Edit2 size={18} />
@@ -245,25 +264,6 @@ export default function LifePlanList({
                   >
                     <Trash2 size={18} strokeWidth={2.5} />
                   </button>
-
-                  {plan.有効フラグ ? (
-                    <div className="ml-auto inline-block bg-primary text-primary-text text-xs font-semibold px-2 py-1 rounded">
-                      メインプラン
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setDeleteConfirm({
-                          id: plan.ID,
-                          name: plan.名前,
-                          type: 'setMain',
-                        });
-                      }}
-                      className="ml-auto text-sm text-primary hover:text-primary-hover font-medium"
-                    >
-                      メインに設定
-                    </button>
-                  )}
                 </div>
               </div>
             ))}
