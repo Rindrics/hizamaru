@@ -224,6 +224,7 @@ export default function ProjectionChart({
               <Bar
                 dataKey="totalExpense"
                 fill="var(--color-primary)"
+                fillOpacity={0.3}
                 isAnimationActive={false}
               />
               <Bar

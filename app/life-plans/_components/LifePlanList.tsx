@@ -217,6 +217,7 @@ export default function LifePlanList({
                         <Bar
                           dataKey="totalExpense"
                           fill="var(--color-primary)"
+                          fillOpacity={0.3}
                           isAnimationActive={false}
                         />
                         <Bar
