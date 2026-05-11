@@ -59,9 +59,7 @@ export default async function LifePlansPage() {
           <h1 className="text-3xl font-bold text-gray-900">ライフプラン管理</h1>
         </div>
 
-        <div className="bg-white rounded-lg shadow">
-          <LifePlanList plans={plans} />
-        </div>
+        <LifePlanList plans={plans} />
       </main>
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Copy, Edit2 } from 'lucide-react';
 import type { ライフプラン } from '@/types';
@@ -41,7 +41,6 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
   const { toasts, remove, info, success } = useToast();
   const router = useRouter();
 
-  // リロード直後はソート済みを使い、操作後はソート前の順序を保つ
   const plansToDisplay =
     displayPlans ||
     [...initialPlans].sort(
@@ -100,7 +99,6 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
         await ライフプラン削除(deleteConfirm.id);
         success('削除完了', 1.0, 'completed');
       }
-      // Fetch fresh data after the DB update.
       const updatedPlans = await ライフプラン一覧取得();
       setDisplayPlans(updatedPlans);
       setHighlightedPlanId(null);
@@ -126,108 +124,88 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
           + 追加
         </button>
       </div>
+
       <div className="px-6 pb-6">
         {plansToDisplay.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             ライフプランが作成されていません
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    プラン名
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    説明
-                  </th>
-                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-900">
-                    メインプラン
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    操作
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                className={`divide-y divide-gray-200 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${
+              isLoading ? 'opacity-50 pointer-events-none' : ''
+            }`}
+          >
+            {plansToDisplay.map((plan) => (
+              <div
+                key={plan.ID}
+                className={`rounded-lg border-2 p-4 transition-all duration-300 ${
+                  highlightedPlanId === plan.ID
+                    ? 'border-primary bg-blue-50 shadow-lg'
+                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                } ${plan.有効フラグ ? 'ring-2 ring-primary ring-offset-2' : ''}`}
               >
-                {plansToDisplay.map((plan) => (
-                  <tr
-                    key={plan.ID}
-                    className={`transition-all duration-500 ${
-                      highlightedPlanId === plan.ID
-                        ? 'bg-blue-50 drop-shadow-md'
-                        : 'hover:bg-gray-50'
-                    }`}
+                {plan.有効フラグ && (
+                  <div className="inline-block bg-primary text-primary-text text-xs font-semibold px-2 py-1 rounded mb-2">
+                    メインプラン
+                  </div>
+                )}
+
+                <h3
+                  onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                  className="text-lg font-semibold text-gray-900 mb-1 cursor-pointer hover:text-primary"
+                >
+                  {plan.名前}
+                </h3>
+
+                <p
+                  onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                  className="text-sm text-gray-600 mb-4 cursor-pointer hover:text-gray-900"
+                >
+                  {plan.説明 || '-'}
+                </p>
+
+                <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                  <button
+                    onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                    className="text-primary hover:text-primary-hover inline-block p-1"
+                    title="編集"
                   >
-                    <td
-                      onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
-                      className="px-6 py-4 text-sm font-medium text-gray-900 cursor-pointer"
+                    <Edit2 size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDuplicateConfirm(plan.ID)}
+                    className="text-primary hover:text-primary-hover inline-block p-1"
+                    title="複製"
+                  >
+                    <Copy size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteConfirm(plan.ID)}
+                    className="inline-block hover:opacity-70 transition-opacity p-1"
+                    title="削除"
+                    style={{ color: '#F28379' }}
+                  >
+                    <Trash2 size={18} strokeWidth={2.5} />
+                  </button>
+
+                  {!plan.有効フラグ && (
+                    <button
+                      onClick={() => {
+                        setDeleteConfirm({
+                          id: plan.ID,
+                          name: plan.名前,
+                          type: 'setMain',
+                        });
+                      }}
+                      className="ml-auto text-sm text-primary hover:text-primary-hover font-medium"
                     >
-                      {plan.名前}
-                    </td>
-                    <td
-                      onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
-                      className="px-6 py-4 text-sm text-gray-600 cursor-pointer"
-                    >
-                      {plan.説明 || '-'}
-                    </td>
-                    <td
-                      className="px-6 py-4 text-sm text-center"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <input
-                        type="radio"
-                        name="main-plan"
-                        value={plan.ID}
-                        checked={plan.有効フラグ}
-                        autoComplete="off"
-                        onChange={() => {
-                          if (plan.有効フラグ) return;
-                          setDeleteConfirm({
-                            id: plan.ID,
-                            name: plan.名前,
-                            type: 'setMain',
-                          });
-                        }}
-                        className="w-4 h-4 accent-primary"
-                      />
-                    </td>
-                    <td
-                      className="px-6 py-4 text-sm space-x-3"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button
-                        onClick={() =>
-                          router.push(`/life-plans/${plan.ID}/edit`)
-                        }
-                        className="text-primary hover:text-primary-hover inline-block"
-                        title="編集"
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDuplicateConfirm(plan.ID)}
-                        className="text-primary hover:text-primary-hover inline-block"
-                        title="複製"
-                      >
-                        <Copy size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteConfirm(plan.ID)}
-                        className="inline-block hover:opacity-70 transition-opacity"
-                        title="削除"
-                        style={{ color: '#F28379' }}
-                      >
-                        <Trash2 size={20} strokeWidth={2.5} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      メインに設定
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
