@@ -162,14 +162,14 @@ export default function LifePlanList({
                 } ${plan.有効フラグ ? 'ring-2 ring-primary ring-offset-2' : ''}`}
               >
                 <h3
-                  onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                  onClick={() => router.push(`/life-plans/${plan.ID}`)}
                   className="text-lg font-semibold text-gray-900 mb-1 cursor-pointer hover:text-primary"
                 >
                   {plan.名前}
                 </h3>
 
                 <p
-                  onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                  onClick={() => router.push(`/life-plans/${plan.ID}`)}
                   className="text-sm text-gray-600 mb-4 cursor-pointer hover:text-gray-900"
                 >
                   {plan.説明 || '-'}
