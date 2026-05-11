@@ -19,6 +19,13 @@ interface Props {
   lifePlanId: string;
 }
 
+const AGE_LABEL_WIDTH = 100;
+const YEAR_COLUMN_WIDTH = 16;
+const Y_AXIS_WIDTH = 80;
+const CHART_LEFT_MARGIN = AGE_LABEL_WIDTH - Y_AXIS_WIDTH;
+const CHART_RIGHT_MARGIN = 30;
+const MIN_CHART_WIDTH = 560;
+
 export default function ProjectionChart({
   projections: initialProjections,
   lifePlanId,
@@ -73,6 +80,27 @@ export default function ProjectionChart({
     hiddenIncome: Math.max(0, d.totalExpense - d.totalIncome),
   }));
 
+  const members = projections[0]?.members || [];
+  const timelineWidth = data.length * YEAR_COLUMN_WIDTH;
+  const contentWidth = Math.max(
+    MIN_CHART_WIDTH,
+    AGE_LABEL_WIDTH + timelineWidth + CHART_RIGHT_MARGIN
+  );
+  const effectiveYearColumnWidth =
+    (contentWidth - AGE_LABEL_WIDTH - CHART_RIGHT_MARGIN) / data.length;
+  const ageGridColumns = `${AGE_LABEL_WIDTH}px repeat(${data.length}, ${effectiveYearColumnWidth}px) ${CHART_RIGHT_MARGIN}px`;
+  const firstYear = data[0]?.year;
+  const formatYearTick = (year: number | string) => {
+    const numericYear = Number(year);
+    const lastDigit = Math.abs(numericYear) % 10;
+
+    if (numericYear === firstYear || lastDigit === 0 || lastDigit === 5) {
+      return String(year);
+    }
+
+    return '';
+  };
+
   return (
     <div>
       <div className="mb-4 flex items-center gap-2">
@@ -119,38 +147,93 @@ export default function ProjectionChart({
           </>
         )}
       </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <ComposedChart
-          data={data}
-          barCategoryGap="-100%"
-          margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" tick={{ fontSize: 12 }} width={30} />
-          <YAxis tick={{ fontSize: 12 }} width={60} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #ccc',
+
+      {members.length > 0 && data.length > 0 && (
+        <div className="overflow-x-auto">
+          <div
+            className="mb-2"
+            style={{
+              width: contentWidth,
             }}
-          />
-          <Bar
-            dataKey="totalIncome"
-            fill="var(--color-success)"
-            isAnimationActive={false}
-          />
-          <Bar
-            dataKey="totalExpense"
-            fill="var(--color-primary)"
-            isAnimationActive={false}
-          />
-          <Bar
-            dataKey="hiddenIncome"
-            fill="var(--color-danger)"
-            isAnimationActive={false}
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
+          >
+            {members.map((member) => (
+              <div
+                key={member.familyMemberId}
+                className="grid"
+                style={{ gridTemplateColumns: ageGridColumns }}
+              >
+                <div
+                  className="py-1 px-2 text-sm font-medium text-gray-900 text-left"
+                >
+                  {member.name}
+                </div>
+                {data.map((yearData) => {
+                  const memberData = yearData.members.find(
+                    (m) => m.familyMemberId === member.familyMemberId
+                  );
+                  return (
+                    <div
+                      key={`${member.familyMemberId}-${yearData.year}`}
+                      className="text-center text-[10px] py-1 px-0.5 text-gray-700"
+                    >
+                      {memberData?.age}
+                    </div>
+                  );
+                })}
+                <div aria-hidden="true" />
+              </div>
+            ))}
+          </div>
+
+          <ResponsiveContainer
+            width={contentWidth}
+            height={300}
+          >
+            <ComposedChart
+              data={data}
+              barCategoryGap="-100%"
+              barGap="5%"
+              margin={{
+                top: 20,
+                right: CHART_RIGHT_MARGIN,
+                left: CHART_LEFT_MARGIN,
+                bottom: 0,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="year"
+                tick={{ fontSize: 10 }}
+                tickFormatter={formatYearTick}
+                interval={0}
+                width={30}
+              />
+              <YAxis tick={{ fontSize: 12 }} width={Y_AXIS_WIDTH} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#fff',
+                  border: '1px solid #ccc',
+                }}
+              />
+              <Bar
+                dataKey="totalIncome"
+                fill="var(--color-success)"
+                isAnimationActive={false}
+              />
+              <Bar
+                dataKey="totalExpense"
+                fill="var(--color-primary)"
+                isAnimationActive={false}
+              />
+              <Bar
+                dataKey="hiddenIncome"
+                fill="var(--color-danger)"
+                isAnimationActive={false}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }
