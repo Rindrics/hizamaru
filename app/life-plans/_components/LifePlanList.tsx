@@ -3,7 +3,15 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Copy, Edit2 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import type { ライフプラン } from '@/types';
 import type { ProjectionYear } from '@/lib/projections/types';
 import {
@@ -28,8 +36,12 @@ interface Props {
   plansWithProjections: LifePlanWithProjection[];
 }
 
-export default function LifePlanList({ plansWithProjections: initialPlansWithProjections }: Props) {
-  const [displayPlans, setDisplayPlans] = useState<LifePlanWithProjection[] | null>(null);
+export default function LifePlanList({
+  plansWithProjections: initialPlansWithProjections,
+}: Props) {
+  const [displayPlans, setDisplayPlans] = useState<
+    LifePlanWithProjection[] | null
+  >(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     id: string;
@@ -69,7 +81,11 @@ export default function LifePlanList({ plansWithProjections: initialPlansWithPro
   const handleDeleteConfirm = (planId: string) => {
     const planData = plansToDisplay.find((p) => p.plan.ID === planId);
     if (planData) {
-      setDeleteConfirm({ id: planId, name: planData.plan.名前, type: 'delete' });
+      setDeleteConfirm({
+        id: planId,
+        name: planData.plan.名前,
+        type: 'delete',
+      });
     }
   };
 
@@ -182,12 +198,12 @@ export default function LifePlanList({ plansWithProjections: initialPlansWithPro
                           tick={{ fontSize: 12 }}
                           width={30}
                         />
-                        <YAxis
-                          tick={{ fontSize: 12 }}
-                          width={60}
-                        />
+                        <YAxis tick={{ fontSize: 12 }} width={60} />
                         <Tooltip
-                          contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #ccc',
+                          }}
                         />
                         <Line
                           type="monotone"

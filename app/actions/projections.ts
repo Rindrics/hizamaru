@@ -80,7 +80,10 @@ export async function 年次予測計算(
     const { data: baseFamilyMembers } = await supabase
       .from('family_members')
       .select('id, name, birth_date')
-      .in('id', familyMembers.map((m) => m.family_member_id));
+      .in(
+        'id',
+        familyMembers.map((m) => m.family_member_id)
+      );
 
     // Fetch income data
     const { data: incomeRecords } = await supabase
@@ -150,9 +153,7 @@ export async function 年次予測計算(
         ? hobbyActivities
             .map((activity) => {
               const activityTerms = hobbyTerms
-                ? hobbyTerms.filter(
-                    (t) => t.hobby_activity_id === activity.id
-                  )
+                ? hobbyTerms.filter((t) => t.hobby_activity_id === activity.id)
                 : [];
 
               return {
@@ -171,9 +172,7 @@ export async function 年次予測計算(
         ? hobbyActivities
             .map((activity) => {
               const activityCosts = annualCosts
-                ? annualCosts.filter(
-                    (c) => c.hobby_activity_id === activity.id
-                  )
+                ? annualCosts.filter((c) => c.hobby_activity_id === activity.id)
                 : [];
 
               return {

@@ -37,7 +37,10 @@ function getIncomeForYear(
       if (term.endYear && year > term.endYear) continue;
 
       const yearsElapsed = year - term.startYear;
-      const raiseMultiplier = Math.pow(1 + term.expectedRaiseRate, yearsElapsed);
+      const raiseMultiplier = Math.pow(
+        1 + term.expectedRaiseRate,
+        yearsElapsed
+      );
       const monthlySalary = term.monthlySalary * raiseMultiplier;
       const baseSalary = monthlySalary * 12;
       const bonus = monthlySalary * term.bonusMonths;
@@ -119,7 +122,11 @@ function calculateMemberProjection(
     familyMemberId,
     year
   );
-  const annualCosts = getAnnualCostsForYear(input.annualCosts, familyMemberId, year);
+  const annualCosts = getAnnualCostsForYear(
+    input.annualCosts,
+    familyMemberId,
+    year
+  );
   const lifeEventCost = getLifeEventCostForYear(
     input.lifeEvents,
     familyMemberId,
