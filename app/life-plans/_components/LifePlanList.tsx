@@ -161,12 +161,6 @@ export default function LifePlanList({
                     : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
                 } ${plan.有効フラグ ? 'ring-2 ring-primary ring-offset-2' : ''}`}
               >
-                {plan.有効フラグ && (
-                  <div className="inline-block bg-primary text-primary-text text-xs font-semibold px-2 py-1 rounded mb-2">
-                    メインプラン
-                  </div>
-                )}
-
                 <h3
                   onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
                   className="text-lg font-semibold text-gray-900 mb-1 cursor-pointer hover:text-primary"
@@ -252,7 +246,11 @@ export default function LifePlanList({
                     <Trash2 size={18} strokeWidth={2.5} />
                   </button>
 
-                  {!plan.有効フラグ && (
+                  {plan.有効フラグ ? (
+                    <div className="ml-auto inline-block bg-primary text-primary-text text-xs font-semibold px-2 py-1 rounded">
+                      メインプラン
+                    </div>
+                  ) : (
                     <button
                       onClick={() => {
                         setDeleteConfirm({
