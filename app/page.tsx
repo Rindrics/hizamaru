@@ -102,65 +102,6 @@ async function DataDisplay() {
             </div>
           </section>
         </div>
-
-        {/* ライフイベント */}
-        <section className="mt-6 bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            ライフイベント
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    イベント名
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    種別
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    年
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    詳細
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {sampleLifeEvents.map((event) => {
-                  let eventName: string = event.イベント種別;
-                  let details = '';
-
-                  if (event.イベント種別 === '出産') {
-                    const member = sampleFamilyMembers.find(
-                      (m) => m.ID === event.家族メンバーID
-                    );
-                    eventName = `${member?.名前}誕生`;
-                  } else if (event.イベント種別 === '住宅購入') {
-                    details = `${event.住宅価格.toLocaleString()}円 • ${event.ローン返済年数}年ローン`;
-                  }
-
-                  return (
-                    <tr key={event.ID} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {eventName}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {event.イベント種別}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {event.イベント年}年
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {details}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
       </main>
     </div>
   );
