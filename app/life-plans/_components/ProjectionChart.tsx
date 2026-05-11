@@ -162,9 +162,7 @@ export default function ProjectionChart({
                 className="grid"
                 style={{ gridTemplateColumns: ageGridColumns }}
               >
-                <div
-                  className="py-1 px-2 text-sm font-medium text-gray-900 text-left"
-                >
+                <div className="py-1 px-2 text-sm font-medium text-gray-900 text-left">
                   {member.name}
                 </div>
                 {data.map((yearData) => {
@@ -185,14 +183,11 @@ export default function ProjectionChart({
             ))}
           </div>
 
-          <ResponsiveContainer
-            width={contentWidth}
-            height={300}
-          >
+          <ResponsiveContainer width={contentWidth} height={300}>
             <ComposedChart
               data={data}
-              barCategoryGap="-100%"
-              barGap="5%"
+              barCategoryGap={0}
+              barGap="-100%"
               margin={{
                 top: 20,
                 right: CHART_RIGHT_MARGIN,
