@@ -43,7 +43,7 @@ export default async function LifePlanDetailPage({
 
   if (!lifePlan || planError) {
     logger.warn('Life plan not found or unauthorized', {
-      planId: params.id,
+      planId: id,
       error: planError?.message,
     });
     redirect('/life-plans');
@@ -73,13 +73,17 @@ export default async function LifePlanDetailPage({
     .select('*')
     .eq('life_plan_id', id);
 
-  const { data: incomeTerms } = await supabase
-    .from('income_terms')
-    .select('*');
+  const { data: incomeTerms } = await supabase.from('income_terms').select('*');
 
   // Fetch projection data
   const projectionResult = await 年次予測計算(id);
   const projections = projectionResult.データ || [];
+  logger.debug('Projection data fetched', {
+    lifePlanId: id,
+    success: projectionResult.成功,
+    dataCount: projections.length,
+    error: projectionResult.エラー,
+  });
 
   // Build timeline events
   interface TimelineEvent {
@@ -93,7 +97,8 @@ export default async function LifePlanDetailPage({
   // Add income events
   if (incomeRecords) {
     incomeRecords.forEach((record) => {
-      const terms = incomeTerms?.filter((t) => t.income_record_id === record.id) || [];
+      const terms =
+        incomeTerms?.filter((t) => t.income_record_id === record.id) || [];
       terms.forEach((term) => {
         timelineEvents.push({
           year: term.start_year,
@@ -114,7 +119,8 @@ export default async function LifePlanDetailPage({
   // Add hobby activity events
   if (hobbyActivities) {
     hobbyActivities.forEach((activity) => {
-      const terms = hobbyTerms?.filter((t) => t.hobby_activity_id === activity.id) || [];
+      const terms =
+        hobbyTerms?.filter((t) => t.hobby_activity_id === activity.id) || [];
       terms.forEach((term) => {
         timelineEvents.push({
           year: term.start_year,
@@ -151,12 +157,19 @@ export default async function LifePlanDetailPage({
       <main className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/life-plans" className="text-gray-500 hover:text-gray-700">
+            <Link
+              href="/life-plans"
+              className="text-gray-500 hover:text-gray-700"
+            >
               <ChevronLeft size={24} />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{lifePlan.name}</h1>
-              <p className="text-gray-600 mt-1">{lifePlan.description || '-'}</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {lifePlan.name}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {lifePlan.description || '-'}
+              </p>
             </div>
           </div>
           <Link
@@ -179,9 +192,9 @@ export default async function LifePlanDetailPage({
         {projections.length > 0 && (
           <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              財務予測（90年間）
+              財務予測
             </h2>
-            <ProjectionChart projections={projections} />
+            <ProjectionChart projections={projections} lifePlanId={id} />
           </div>
         )}
 

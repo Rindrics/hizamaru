@@ -43,8 +43,10 @@ async function verifyLifePlanOwnership(
 }
 
 export async function 年次予測計算(
-  lifePlanId: string
+  lifePlanId: string,
+  targetYears: number = 60
 ): Promise<{ 成功?: boolean; エラー?: string; データ?: ProjectionYear[] }> {
+  logger.debug('年次予測計算 called', { lifePlanId, targetYears });
   try {
     const accountId = await getAccountId();
     const isOwner = await verifyLifePlanOwnership(lifePlanId, accountId);
@@ -117,9 +119,11 @@ export async function 年次予測計算(
       .eq('life_plan_id', lifePlanId);
 
     // Build projection input
+    const baseYear = new Date().getFullYear();
+
     const projectionInput: ProjectionInput = {
-      baseYear: new Date().getFullYear(),
-      targetAge: 90,
+      baseYear,
+      targetAge: targetYears,
       familyMembers: baseFamilyMembers
         ? baseFamilyMembers.map((m) => ({
             id: m.id,
@@ -202,6 +206,11 @@ export async function 年次予測計算(
     };
 
     const projections = calculateYearlyProjections(projectionInput);
+    logger.debug('年次予測計算 completed', {
+      lifePlanId,
+      targetYears,
+      projectionCount: projections.length,
+    });
 
     return { 成功: true, データ: projections };
   } catch (err) {

@@ -148,13 +148,7 @@ export function calculateYearlyProjections(
   const projections: ProjectionYear[] = [];
   let cumulativeAssets = input.initialAssets;
 
-  // Calculate end year (when oldest member reaches target age)
-  let endYear = input.baseYear;
-  for (const member of input.familyMembers) {
-    const birthYear = parseInt(member.birthDate.substring(0, 4));
-    const yearWhenTargetAge = birthYear + input.targetAge;
-    endYear = Math.max(endYear, yearWhenTargetAge);
-  }
+  const endYear = input.baseYear + input.targetAge;
 
   for (let year = input.baseYear; year <= endYear; year++) {
     const members: MemberProjection[] = input.familyMembers.map((member) =>
