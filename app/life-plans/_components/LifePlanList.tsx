@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Copy, Edit2 } from 'lucide-react';
 import {
-  BarChart,
+  ComposedChart,
   Bar,
   XAxis,
   YAxis,
@@ -184,7 +184,14 @@ export default function LifePlanList({
                 {projections.length > 0 && (
                   <div className="mb-4 -mx-4 px-4">
                     <ResponsiveContainer width="100%" height={150}>
-                      <BarChart data={projections}>
+                      <ComposedChart
+                        data={projections.map((d) => ({
+                          ...d,
+                          hiddenIncome: Math.max(0, d.totalExpense - d.totalIncome),
+                        }))}
+                        barCategoryGap="-100%"
+                        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+                      >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
                           dataKey="year"
@@ -199,11 +206,21 @@ export default function LifePlanList({
                           }}
                         />
                         <Bar
-                          dataKey="totalAssets"
+                          dataKey="totalIncome"
+                          fill="var(--color-success)"
+                          isAnimationActive={false}
+                        />
+                        <Bar
+                          dataKey="totalExpense"
                           fill="var(--color-primary)"
                           isAnimationActive={false}
                         />
-                      </BarChart>
+                        <Bar
+                          dataKey="hiddenIncome"
+                          fill="var(--color-danger)"
+                          isAnimationActive={false}
+                        />
+                      </ComposedChart>
                     </ResponsiveContainer>
                   </div>
                 )}
