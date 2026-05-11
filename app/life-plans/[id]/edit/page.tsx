@@ -42,11 +42,28 @@ export default async function EditLifePlanPage({ params }: Props) {
   const familyMembers =
     await ライフプランRepo.ライフプランID別家族メンバー取得(id);
 
-  // Fetch income records for all family members in this plan
+  // Fetch income records and terms
   const { data: incomeRecords } = await supabase
-    .from('income')
+    .from('income_records')
     .select('*')
     .eq('life_plan_id', id);
+
+  const { data: incomeTerms } = await supabase.from('income_terms').select('*');
+
+  // Fetch hobby activities and terms
+  const { data: hobbyActivities } = await supabase
+    .from('hobby_activities')
+    .select('*')
+    .eq('life_plan_id', id);
+
+  const { data: hobbyActivityTerms } = await supabase
+    .from('hobby_activity_terms')
+    .select('*');
+
+  // Fetch annual costs for hobby activities
+  const { data: annualCosts } = await supabase
+    .from('hobby_activity_annual_costs')
+    .select('*');
 
   const actionWithId = ライフプラン更新.bind(null, id);
 
@@ -73,6 +90,10 @@ export default async function EditLifePlanPage({ params }: Props) {
             lifePlanId={id}
             familyMembers={familyMembers || []}
             incomeRecords={incomeRecords || []}
+            incomeTerms={incomeTerms || []}
+            hobbyActivities={hobbyActivities || []}
+            hobbyActivityTerms={hobbyActivityTerms || []}
+            annualCosts={annualCosts || []}
           />
         </div>
       </main>
