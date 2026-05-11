@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2, Copy } from 'lucide-react';
+import { Trash2, Copy, Edit2 } from 'lucide-react';
 import type { ライフプラン } from '@/types';
 import {
   ライフプラン削除,
@@ -192,13 +192,22 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
                             type: 'setMain',
                           });
                         }}
-                        className="w-4 h-4"
+                        className="w-4 h-4 accent-primary"
                       />
                     </td>
                     <td
                       className="px-6 py-4 text-sm space-x-3"
                       onClick={(e) => e.stopPropagation()}
                     >
+                      <button
+                        onClick={() =>
+                          router.push(`/life-plans/${plan.ID}/edit`)
+                        }
+                        className="text-primary hover:text-primary-hover inline-block"
+                        title="編集"
+                      >
+                        <Edit2 size={18} />
+                      </button>
                       <button
                         onClick={() => handleDuplicateConfirm(plan.ID)}
                         className="text-primary hover:text-primary-hover inline-block"
