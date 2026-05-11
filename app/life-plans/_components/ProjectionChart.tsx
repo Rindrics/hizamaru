@@ -23,9 +23,8 @@ export default function ProjectionChart({
   projections: initialProjections,
   lifePlanId,
 }: Props) {
-  const [projections, setProjections] = useState<ProjectionYear[]>(
-    initialProjections
-  );
+  const [projections, setProjections] =
+    useState<ProjectionYear[]>(initialProjections);
   const [years, setYears] = useState(60);
   const [inputYears, setInputYears] = useState('60');
   const [isLoading, setIsLoading] = useState(false);
@@ -77,9 +76,7 @@ export default function ProjectionChart({
   return (
     <div>
       <div className="mb-4 flex items-center gap-2">
-        <label className="text-sm font-medium text-gray-700">
-          計算期間:
-        </label>
+        <label className="text-sm font-medium text-gray-700">計算期間:</label>
         {!isEditing ? (
           <>
             <span className="text-sm text-gray-900 font-medium">{years}年</span>
@@ -124,34 +121,34 @@ export default function ProjectionChart({
       </div>
       <ResponsiveContainer width="100%" height={300}>
         <ComposedChart
-        data={data}
-        barCategoryGap="-100%"
-        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="year" tick={{ fontSize: 12 }} width={30} />
-        <YAxis tick={{ fontSize: 12 }} width={60} />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: '#fff',
-            border: '1px solid #ccc',
-          }}
-        />
-        <Bar
-          dataKey="totalIncome"
-          fill="var(--color-success)"
-          isAnimationActive={false}
-        />
-        <Bar
-          dataKey="totalExpense"
-          fill="var(--color-primary)"
-          isAnimationActive={false}
-        />
-        <Bar
-          dataKey="hiddenIncome"
-          fill="var(--color-danger)"
-          isAnimationActive={false}
-        />
+          data={data}
+          barCategoryGap="-100%"
+          margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="year" tick={{ fontSize: 12 }} width={30} />
+          <YAxis tick={{ fontSize: 12 }} width={60} />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: '#fff',
+              border: '1px solid #ccc',
+            }}
+          />
+          <Bar
+            dataKey="totalIncome"
+            fill="var(--color-success)"
+            isAnimationActive={false}
+          />
+          <Bar
+            dataKey="totalExpense"
+            fill="var(--color-primary)"
+            isAnimationActive={false}
+          />
+          <Bar
+            dataKey="hiddenIncome"
+            fill="var(--color-danger)"
+            isAnimationActive={false}
+          />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
