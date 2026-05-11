@@ -25,10 +25,7 @@ import ConfirmDialog from '@/app/family/_components/ConfirmDialog';
 import { ライフプラン追加 } from '@/app/actions/lifePlans';
 import Toast from '@/app/_components/Toast';
 import { useToast } from '@/lib/hooks/useToast';
-import {
-  CHART_CONFIG,
-  CHART_LEFT_MARGIN,
-} from '../_constants/chartConfig';
+import { CHART_CONFIG, CHART_LEFT_MARGIN } from '../_constants/chartConfig';
 
 interface LifePlanWithProjection {
   plan: ライフプラン;

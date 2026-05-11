@@ -13,10 +13,7 @@ import {
 } from 'recharts';
 import type { ProjectionYear } from '@/lib/projections/types';
 import { 年次予測計算 } from '@/app/actions/projections';
-import {
-  CHART_CONFIG,
-  CHART_LEFT_MARGIN,
-} from '../_constants/chartConfig';
+import { CHART_CONFIG, CHART_LEFT_MARGIN } from '../_constants/chartConfig';
 
 interface Props {
   projections: ProjectionYear[];
