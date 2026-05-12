@@ -198,3 +198,54 @@ export async function ライフプラン一覧取得() {
     throw err;
   }
 }
+
+export async function 予算セット設定(
+  lifePlanId: string,
+  budgetSetId: string | null
+) {
+  try {
+    const accountId = await getAccountId();
+    const supabase = await getDbServerClient();
+
+    logger.debug('LifePlan: set budget set request', { lifePlanId, budgetSetId });
+
+    // Verify ownership of life plan
+    const { data: lifePlan } = await supabase
+      .from('life_plans')
+      .select('account_id')
+      .eq('id', lifePlanId)
+      .single();
+
+    if (!lifePlan || lifePlan.account_id !== accountId) {
+      throw new Error('アクセス権限がありません');
+    }
+
+    // If budgetSetId is provided, verify ownership
+    if (budgetSetId) {
+      const { data: budgetSet } = await supabase
+        .from('budget_sets')
+        .select('account_id')
+        .eq('id', budgetSetId)
+        .single();
+
+      if (!budgetSet || budgetSet.account_id !== accountId) {
+        throw new Error('アクセス権限がありません');
+      }
+    }
+
+    const { error } = await supabase
+      .from('life_plans')
+      .update({ budget_set_id: budgetSetId })
+      .eq('id', lifePlanId);
+
+    if (error) throw error;
+
+    logger.info('Budget set assigned to life plan', { lifePlanId, budgetSetId });
+
+    revalidatePath(`/life-plans/${lifePlanId}/edit`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logger.error('Failed to set budget set', { error: message });
+    throw err;
+  }
+}

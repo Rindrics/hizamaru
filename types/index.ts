@@ -39,6 +39,7 @@ export type ライフプラン = {
   名前: string;
   説明: string | null;
   有効フラグ: boolean;
+  予算セットID?: string;
   作成日: Date;
   更新日: Date;
 };
@@ -138,15 +139,22 @@ export type 予算カテゴリ = {
   アカウントID: string;
   名前: string;
   デフォルト: boolean;
+  色?: string;
+  作成日: Date;
+};
+
+export type 予算セット = {
+  ID: string;
+  アカウントID: string;
+  名前: string;
   作成日: Date;
 };
 
 export type 予算 = {
   ID: string;
-  ライフプランID: string;
+  予算セットID: string;
   予算カテゴリID: string;
   金額: number;
-  有効期間: string; // 'YYYY-MM'
   作成日: Date;
 };
 
