@@ -55,6 +55,12 @@ export interface LifeEventData {
   cost: number;
 }
 
+export interface BudgetData {
+  categoryId: string;
+  categoryName: string;
+  amount: number;
+}
+
 export interface FamilyMemberBase {
   id: string;
   name: string;
@@ -69,5 +75,6 @@ export interface ProjectionInput {
   hobbyExpenses: HobbyActivityExpense[];
   annualCosts: AnnualCostData[];
   lifeEvents: LifeEventData[];
+  budgetData: BudgetData[];
   initialAssets: number;
 }

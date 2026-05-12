@@ -118,6 +118,32 @@ export async function 年次予測計算(
       .select('*')
       .eq('life_plan_id', lifePlanId);
 
+    // Fetch budget data if budget set is assigned
+    let budgetAmounts: Array<{
+      category_id: string;
+      category_name: string;
+      amount: number;
+    }> = [];
+
+    if (lifePlan.budget_set_id) {
+      const { data: budgets } = await supabase
+        .from('budgets')
+        .select('budget_category_id, budget_categories(id, name), amount')
+        .eq('budget_set_id', lifePlan.budget_set_id);
+
+      if (budgets) {
+        budgetAmounts = budgets
+          .map((b: Record<string, unknown>) => ({
+            category_id: b.budget_category_id as string,
+            category_name: (
+              b.budget_categories as Record<string, unknown>
+            )?.name as string,
+            amount: b.amount as number,
+          }))
+          .filter((b) => b.amount > 0);
+      }
+    }
+
     // Build projection input
     const baseYear = new Date().getFullYear();
 
@@ -202,6 +228,11 @@ export async function 年次予測計算(
               cost: e.home_price || 0,
             }))
         : [],
+      budgetData: budgetAmounts.map((b) => ({
+        categoryId: b.category_id,
+        categoryName: b.category_name,
+        amount: b.amount,
+      })),
       initialAssets: 0,
     };
 

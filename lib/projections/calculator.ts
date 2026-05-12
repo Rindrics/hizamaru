@@ -6,6 +6,7 @@ import {
   HobbyActivityExpense,
   AnnualCostData,
   LifeEventData,
+  BudgetData,
 } from './types';
 
 function calculateAge(birthDate: string, year: number): number {
@@ -108,6 +109,11 @@ function getLifeEventCostForYear(
     .reduce((sum, e) => sum + e.cost, 0);
 }
 
+function getBudgetExpenseForYear(budgetData: BudgetData[]): number {
+  // 予算金額は月額なので、年額に変換（月額 × 12）
+  return budgetData.reduce((sum, b) => sum + b.amount * 12, 0);
+}
+
 function calculateMemberProjection(
   familyMemberId: string,
   name: string,
@@ -132,13 +138,14 @@ function calculateMemberProjection(
     familyMemberId,
     year
   );
+  const budgetExpense = getBudgetExpenseForYear(input.budgetData);
 
   return {
     familyMemberId,
     name,
     age,
     income,
-    expense: hobbyExpense + annualCosts + lifeEventCost,
+    expense: hobbyExpense + annualCosts + lifeEventCost + budgetExpense,
   };
 }
 
