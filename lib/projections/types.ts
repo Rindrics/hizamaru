@@ -59,6 +59,7 @@ export interface BudgetData {
   categoryId: string;
   categoryName: string;
   amount: number;
+  monthlyAmounts?: Record<string, number>; // 月別金額: { "1": 30000, "2": 32000, ... }
 }
 
 export interface FamilyMemberBase {

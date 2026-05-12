@@ -231,6 +231,7 @@ export async function 年次予測計算(
         categoryId: b.category_id,
         categoryName: b.category_name,
         amount: b.amount,
+        monthlyAmounts: (b.monthly_amounts as Record<string, number>) || undefined,
       })),
       initialAssets: 0,
     };

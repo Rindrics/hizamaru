@@ -54,6 +54,7 @@ function mapToBudget(record: Record<string, unknown>): 予算 {
     予算セットID: record.budget_set_id as string,
     予算カテゴリID: record.budget_category_id as string,
     金額: record.amount as number,
+    月別金額: (record.monthly_amounts as Record<string, number>) || undefined,
     作成日: new Date(record.created_at as string),
   };
 }
@@ -382,6 +383,7 @@ export async function 予算セット複製(
         budget_set_id: newSetId,
         budget_category_id: budget.budget_category_id,
         amount: budget.amount,
+        monthly_amounts: (budget as Record<string, unknown>).monthly_amounts,
       }));
 
       const { error: budgetInsertError } = await supabase
@@ -414,12 +416,34 @@ export async function 予算設定(
   try {
     const accountId = await getAccountId();
     const 金額Str = formData.get('金額') as string;
-    const 金額 = parseInt(金額Str, 10);
+    const 月別金額Str = formData.get('月別金額') as string;
 
-    logger.debug('Budget: set request', { budgetSetId, categoryId, 金額 });
+    let 金額: number;
+    let 月別金額: Record<string, number> | null = null;
 
-    if (isNaN(金額) || 金額 < 0) {
-      return { 成功: false, エラー: '金額は正の数値を入力してください' };
+    if (月別金額Str) {
+      // 月別金額がある場合
+      月別金額 = JSON.parse(月別金額Str);
+      logger.debug('Budget: set request with monthly amounts', {
+        budgetSetId,
+        categoryId,
+        月別金額,
+      });
+
+      // 月別金額から平均を計算（保存用）
+      const values = Object.values(月別金額).filter((v) => v > 0);
+      金額 =
+        values.length > 0
+          ? Math.round(values.reduce((sum, v) => sum + v, 0) / values.length)
+          : 0;
+    } else {
+      // 単一金額の場合
+      金額 = parseInt(金額Str, 10);
+      logger.debug('Budget: set request', { budgetSetId, categoryId, 金額 });
+
+      if (isNaN(金額) || 金額 < 0) {
+        return { 成功: false, エラー: '金額は正の数値を入力してください' };
+      }
     }
 
     const supabase = await getDbServerClient();
@@ -447,7 +471,10 @@ export async function 予算設定(
       // Update existing
       const { error } = await supabase
         .from('budgets')
-        .update({ amount: 金額 })
+        .update({
+          amount: 金額,
+          monthly_amounts: 月別金額,
+        })
         .eq('id', existing.id);
 
       if (error) throw error;
@@ -458,12 +485,18 @@ export async function 予算設定(
         budget_set_id: budgetSetId,
         budget_category_id: categoryId,
         amount: 金額,
+        monthly_amounts: 月別金額,
       });
 
       if (error) throw error;
     }
 
-    logger.info('Budget set', { budgetSetId, categoryId, 金額 });
+    logger.info('Budget set', {
+      budgetSetId,
+      categoryId,
+      金額,
+      月別金額: 月別金額 ? 'provided' : 'not provided',
+    });
     revalidatePath('/budget');
 
     return { 成功: true };

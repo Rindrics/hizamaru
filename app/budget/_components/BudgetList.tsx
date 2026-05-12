@@ -164,14 +164,19 @@ export default function BudgetList({
     }
   };
 
-  const getBudgetAmount = (
+  const getBudgetData = (
     budgetSetId: string,
     categoryId: string
-  ): number | null => {
+  ): { amount: number | null; monthlyAmounts?: Record<string, number> } => {
     const set = initialBudgetSets.find((s) => s.ID === budgetSetId);
-    if (!set) return null;
+    if (!set) return { amount: null };
     const budget = set.予算.find((b) => b.予算カテゴリID === categoryId);
-    return budget?.金額 ?? null;
+    if (!budget) return { amount: null };
+    return {
+      amount: budget.金額 ?? null,
+      monthlyAmounts: (budget as Record<string, unknown>)
+        .月別金額 as Record<string, number>,
+    };
   };
 
   return (
@@ -298,16 +303,20 @@ export default function BudgetList({
                   </div>
 
                   <div className="space-y-3">
-                    {initialCategories.map((category) => (
-                      <BudgetAmountInput
-                        key={`${set.ID}-${category.ID}`}
-                        budgetSetId={set.ID}
-                        categoryId={category.ID}
-                        categoryName={category.名前}
-                        categoryColor={category.色}
-                        defaultAmount={getBudgetAmount(set.ID, category.ID)}
-                      />
-                    ))}
+                    {initialCategories.map((category) => {
+                      const budgetData = getBudgetData(set.ID, category.ID);
+                      return (
+                        <BudgetAmountInput
+                          key={`${set.ID}-${category.ID}`}
+                          budgetSetId={set.ID}
+                          categoryId={category.ID}
+                          categoryName={category.名前}
+                          categoryColor={category.色}
+                          defaultAmount={budgetData.amount}
+                          monthlyAmounts={budgetData.monthlyAmounts}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               ))}

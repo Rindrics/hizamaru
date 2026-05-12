@@ -155,6 +155,7 @@ export type 予算 = {
   予算セットID: string;
   予算カテゴリID: string;
   金額: number;
+  月別金額?: Record<string, number>; // 月別金額: { "1": 30000, "2": 32000, ... }
   作成日: Date;
 };
 
