@@ -135,9 +135,8 @@ export async function 年次予測計算(
         budgetAmounts = budgets
           .map((b: Record<string, unknown>) => ({
             category_id: b.budget_category_id as string,
-            category_name: (
-              b.budget_categories as Record<string, unknown>
-            )?.name as string,
+            category_name: (b.budget_categories as Record<string, unknown>)
+              ?.name as string,
             amount: b.amount as number,
           }))
           .filter((b) => b.amount > 0);
