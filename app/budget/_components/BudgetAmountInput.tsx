@@ -23,10 +23,7 @@ export default function BudgetAmountInput({
   const { error: showError, success } = useToast();
   const [, startTransition] = useTransition();
 
-  const actionWithParams = async (
-    prevState: unknown,
-    formData: FormData
-  ) => {
+  const actionWithParams = async (prevState: unknown, formData: FormData) => {
     const result = await 予算設定(budgetSetId, categoryId, prevState, formData);
     if (result?.成功) {
       success('予算を設定しました', 1.0, 'completed');
@@ -36,10 +33,7 @@ export default function BudgetAmountInput({
     return result;
   };
 
-  const [_state, formAction] = useActionState(
-    actionWithParams,
-    null
-  );
+  const [_state, formAction] = useActionState(actionWithParams, null);
 
   const handleBlur = () => {
     const form = new FormData();

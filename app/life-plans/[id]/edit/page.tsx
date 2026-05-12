@@ -102,7 +102,9 @@ export default async function EditLifePlanPage({ params }: Props) {
           <LifePlanForm action={actionWithId} defaultValues={plan} />
 
           <div className="mt-6 border-t pt-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">予算設定</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              予算設定
+            </h2>
             <BudgetSetSelector
               lifePlanId={id}
               currentBudgetSetId={plan.予算セットID}

@@ -38,7 +38,10 @@ export default function BudgetSetSelector({
 
   return (
     <div className="mb-6">
-      <label htmlFor="budget_set_id" className="block text-sm font-medium text-gray-700 mb-2">
+      <label
+        htmlFor="budget_set_id"
+        className="block text-sm font-medium text-gray-700 mb-2"
+      >
         予算セット
       </label>
       <select

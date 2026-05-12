@@ -326,10 +326,7 @@ export async function 予算セット削除(id: string): Promise<void> {
       throw new Error('アクセス権限がありません');
     }
 
-    const { error } = await supabase
-      .from('budget_sets')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('budget_sets').delete().eq('id', id);
 
     if (error) throw error;
 
@@ -414,9 +411,7 @@ export async function 予算設定(
   }
 }
 
-export async function 予算取得(
-  budgetSetId: string
-): Promise<予算[]> {
+export async function 予算取得(budgetSetId: string): Promise<予算[]> {
   try {
     const supabase = await getDbServerClient();
 

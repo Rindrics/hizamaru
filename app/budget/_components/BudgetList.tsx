@@ -36,8 +36,15 @@ export default function BudgetList({
 }: Props) {
   const [isAddSetOpen, setIsAddSetOpen] = useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<{ id: string; name: string; color: string } | null>(null);
-  const [editingSet, setEditingSet] = useState<{ id: string; name: string } | null>(null);
+  const [editingCategory, setEditingCategory] = useState<{
+    id: string;
+    name: string;
+    color: string;
+  } | null>(null);
+  const [editingSet, setEditingSet] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     id: string;
     name: string;
@@ -78,7 +85,11 @@ export default function BudgetList({
 
   const editCategoryAction = async (prevState: unknown, formData: FormData) => {
     if (!editingCategory) return null;
-    const result = await 予算カテゴリ更新(editingCategory.id, prevState, formData);
+    const result = await 予算カテゴリ更新(
+      editingCategory.id,
+      prevState,
+      formData
+    );
     if (result?.成功 === false) {
       return result;
     }
@@ -154,9 +165,7 @@ export default function BudgetList({
         {/* Budget Categories Section */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              カテゴリ
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">カテゴリ</h2>
             <button
               onClick={() => setIsAddCategoryOpen(true)}
               className="bg-primary text-primary-text px-4 py-2 rounded-md hover:bg-primary-hover"
@@ -216,9 +225,7 @@ export default function BudgetList({
         {/* Budget Sets Section */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              予算セット
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">予算セット</h2>
             <button
               onClick={() => setIsAddSetOpen(true)}
               className="bg-primary text-primary-text px-4 py-2 rounded-md hover:bg-primary-hover"

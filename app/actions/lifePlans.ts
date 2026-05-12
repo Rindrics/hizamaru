@@ -207,7 +207,10 @@ export async function 予算セット設定(
     const accountId = await getAccountId();
     const supabase = await getDbServerClient();
 
-    logger.debug('LifePlan: set budget set request', { lifePlanId, budgetSetId });
+    logger.debug('LifePlan: set budget set request', {
+      lifePlanId,
+      budgetSetId,
+    });
 
     // Verify ownership of life plan
     const { data: lifePlan } = await supabase
@@ -240,7 +243,10 @@ export async function 予算セット設定(
 
     if (error) throw error;
 
-    logger.info('Budget set assigned to life plan', { lifePlanId, budgetSetId });
+    logger.info('Budget set assigned to life plan', {
+      lifePlanId,
+      budgetSetId,
+    });
 
     revalidatePath(`/life-plans/${lifePlanId}/edit`);
   } catch (err) {

@@ -3,18 +3,28 @@
 import { useActionState } from 'react';
 
 interface Props {
-  action: (prevState: unknown, formData: FormData) => Promise<{ 成功?: boolean; エラー?: string } | null | undefined>;
+  action: (
+    prevState: unknown,
+    formData: FormData
+  ) => Promise<{ 成功?: boolean; エラー?: string } | null | undefined>;
   defaultValue?: string;
   isEditing?: boolean;
 }
 
-export default function BudgetSetForm({ action, defaultValue, isEditing }: Props) {
+export default function BudgetSetForm({
+  action,
+  defaultValue,
+  isEditing,
+}: Props) {
   const [state, formAction, isPending] = useActionState(action, null);
 
   return (
     <form action={formAction} className="space-y-4">
       <div>
-        <label htmlFor="名前" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="名前"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           セット名
         </label>
         <input
@@ -40,7 +50,13 @@ export default function BudgetSetForm({ action, defaultValue, isEditing }: Props
         disabled={isPending}
         className="w-full bg-primary text-primary-text py-2 rounded-md hover:bg-primary-hover disabled:opacity-50"
       >
-        {isPending ? (isEditing ? '更新中...' : '作成中...') : (isEditing ? 'セットを更新' : 'セットを作成')}
+        {isPending
+          ? isEditing
+            ? '更新中...'
+            : '作成中...'
+          : isEditing
+            ? 'セットを更新'
+            : 'セットを作成'}
       </button>
     </form>
   );
