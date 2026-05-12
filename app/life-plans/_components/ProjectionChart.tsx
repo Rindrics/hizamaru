@@ -31,12 +31,12 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
   const otherExpense = d.totalExpense - budgetTotal;
 
   const incomeBar = payload.find(
-    (p: typeof payload[number]) => p.dataKey === 'totalIncome'
+    (p: (typeof payload)[number]) => p.dataKey === 'totalIncome'
   );
   const incomeColor = incomeBar?.fill || 'var(--color-success)';
 
   const expenseBar = payload.find(
-    (p: typeof payload[number]) => p.dataKey === 'totalExpense'
+    (p: (typeof payload)[number]) => p.dataKey === 'totalExpense'
   );
   const expenseColor = expenseBar?.fill || 'var(--color-primary)';
 
@@ -44,7 +44,9 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
     <div className="bg-white border border-gray-200 rounded p-3 text-sm shadow-sm min-w-40">
       <p className="font-semibold mb-2 text-black">{d.year}年</p>
       <p style={{ color: incomeColor }}>収入: {fmt(d.totalIncome)}</p>
-      <p className="mt-1" style={{ color: expenseColor }}>支出合計: {fmt(d.totalExpense)}</p>
+      <p className="mt-1" style={{ color: expenseColor }}>
+        支出合計: {fmt(d.totalExpense)}
+      </p>
       {budgetBreakdown.map((b) => (
         <p
           key={b.categoryId}
@@ -59,7 +61,9 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
         </p>
       ))}
       {otherExpense > 0 && (
-        <p className="ml-2 text-xs text-gray-500">その他: {fmt(otherExpense)}</p>
+        <p className="ml-2 text-xs text-gray-500">
+          その他: {fmt(otherExpense)}
+        </p>
       )}
       <p className="mt-1 text-black">資産合計: {fmt(d.totalAssets)}</p>
     </div>

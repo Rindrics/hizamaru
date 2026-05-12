@@ -110,11 +110,16 @@ function getLifeEventCostForYear(
     .reduce((sum, e) => sum + e.cost, 0);
 }
 
-function getBudgetBreakdownForYear(budgetData: BudgetData[]): BudgetBreakdownItem[] {
+function getBudgetBreakdownForYear(
+  budgetData: BudgetData[]
+): BudgetBreakdownItem[] {
   return budgetData.map((b) => {
     const annualAmount =
       b.monthlyAmounts && Object.keys(b.monthlyAmounts).length > 0
-        ? Object.values(b.monthlyAmounts).reduce((total, amount) => total + amount, 0)
+        ? Object.values(b.monthlyAmounts).reduce(
+            (total, amount) => total + amount,
+            0
+          )
         : b.amount * 12;
     return {
       categoryId: b.categoryId,
