@@ -42,7 +42,11 @@ async function DataDisplay() {
   // Check if we should simulate empty database for development
   const simulateEmptyDb = process.env.NEXT_PUBLIC_SIMULATE_EMPTY_DB === 'true';
 
-  if (!simulateEmptyDb) {
+  if (simulateEmptyDb) {
+    logger.debug('DataDisplay: simulating empty database');
+    familyMembers = [];
+    lifePlans = [];
+  } else {
     try {
       const data = await fetchUserData();
       familyMembers = data.familyMembers;
@@ -70,16 +74,35 @@ async function DataDisplay() {
       familyMembers = [];
       lifePlans = [];
     }
-  } else {
-    logger.debug('DataDisplay: simulating empty database');
   }
 
   const sampleFamilyMembers = familyMembers;
   const sampleLifePlans = lifePlans;
+
+  // Check if there is no data
+  const hasNoData = sampleFamilyMembers.length === 0 && sampleLifePlans.length === 0;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {hasNoData ? (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              ようこそ
+            </h2>
+            <p className="text-gray-600 mb-6">
+              まず
+              <a
+                href="/family"
+                className="text-primary hover:opacity-90 font-medium"
+              >
+                家族メンバーを追加
+              </a>
+              してください
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 家族メンバー */}
           <section className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -127,7 +150,8 @@ async function DataDisplay() {
               })}
             </div>
           </section>
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );
