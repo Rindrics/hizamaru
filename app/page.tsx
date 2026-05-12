@@ -39,32 +39,39 @@ async function DataDisplay() {
   let lifePlans: ライフプラン[] = [];
   const planProjections: Map<string, ProjectionYear[]> = new Map();
 
-  try {
-    const data = await fetchUserData();
-    familyMembers = data.familyMembers;
-    lifePlans = data.lifePlans;
+  // Check if we should simulate empty database for development
+  const simulateEmptyDb = process.env.NEXT_PUBLIC_SIMULATE_EMPTY_DB === 'true';
 
-    // Fetch projections for each plan
-    for (const plan of lifePlans) {
-      try {
-        const result = await 年次予測計算(plan.ID);
-        if (result.データ) {
-          planProjections.set(plan.ID, result.データ);
+  if (!simulateEmptyDb) {
+    try {
+      const data = await fetchUserData();
+      familyMembers = data.familyMembers;
+      lifePlans = data.lifePlans;
+
+      // Fetch projections for each plan
+      for (const plan of lifePlans) {
+        try {
+          const result = await 年次予測計算(plan.ID);
+          if (result.データ) {
+            planProjections.set(plan.ID, result.データ);
+          }
+        } catch (err) {
+          logger.debug('Failed to fetch projections for plan', {
+            planId: plan.ID,
+            error: err instanceof Error ? err.message : String(err),
+          });
         }
-      } catch (err) {
-        logger.debug('Failed to fetch projections for plan', {
-          planId: plan.ID,
-          error: err instanceof Error ? err.message : String(err),
-        });
       }
+    } catch (err) {
+      // Failed to fetch user data - show empty data
+      logger.debug('DataDisplay: failed to fetch user data', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      familyMembers = [];
+      lifePlans = [];
     }
-  } catch (err) {
-    // Failed to fetch user data - show empty data
-    logger.debug('DataDisplay: failed to fetch user data', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    familyMembers = [];
-    lifePlans = [];
+  } else {
+    logger.debug('DataDisplay: simulating empty database');
   }
 
   const sampleFamilyMembers = familyMembers;
@@ -73,6 +80,27 @@ async function DataDisplay() {
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* 家族メンバー */}
+          <section className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              家族メンバー
+            </h2>
+            <div className="space-y-3">
+              {sampleFamilyMembers.map((member) => (
+                <div
+                  key={member.ID}
+                  className="p-4 border border-gray-200 rounded-md hover:bg-gray-50"
+                >
+                  <h3 className="font-medium text-gray-900">{member.名前}</h3>
+                  <p className="text-sm text-gray-600">
+                    {member.続柄} •{' '}
+                    {member.生年月日.toLocaleDateString('ja-JP')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* ライフプラン */}
           <section className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -97,27 +125,6 @@ async function DataDisplay() {
                   </div>
                 );
               })}
-            </div>
-          </section>
-
-          {/* 家族メンバー */}
-          <section className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              家族メンバー
-            </h2>
-            <div className="space-y-3">
-              {sampleFamilyMembers.map((member) => (
-                <div
-                  key={member.ID}
-                  className="p-4 border border-gray-200 rounded-md hover:bg-gray-50"
-                >
-                  <h3 className="font-medium text-gray-900">{member.名前}</h3>
-                  <p className="text-sm text-gray-600">
-                    {member.続柄} •{' '}
-                    {member.生年月日.toLocaleDateString('ja-JP')}
-                  </p>
-                </div>
-              ))}
             </div>
           </section>
         </div>
