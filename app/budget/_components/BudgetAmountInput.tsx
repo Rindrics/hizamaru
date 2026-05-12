@@ -65,10 +65,9 @@ export default function BudgetAmountInput({
   const [isPending, startTransition] = useTransition();
   const { error: showError, success } = useToast();
 
-  const hasChanges =
-    isMonthlyMode
-      ? JSON.stringify(monthlyValues) !== JSON.stringify(initialMonthlyValues)
-      : amount !== (defaultAmount?.toString() || '');
+  const hasChanges = isMonthlyMode
+    ? JSON.stringify(monthlyValues) !== JSON.stringify(initialMonthlyValues)
+    : amount !== (defaultAmount?.toString() || '');
 
   // Debug log
   console.log(`[${categoryName}] hasChanges:`, {

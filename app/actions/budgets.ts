@@ -464,10 +464,17 @@ export async function 予算設定(
       .eq('id', budgetSetId)
       .single();
 
-    console.log('[予算設定] Budget set lookup', { budgetSetId, budgetSet, budgetSetError });
+    console.log('[予算設定] Budget set lookup', {
+      budgetSetId,
+      budgetSet,
+      budgetSetError,
+    });
 
     if (!budgetSet || budgetSet.account_id !== accountId) {
-      console.log('[予算設定] Access denied', { has: !!budgetSet, matches: budgetSet?.account_id === accountId });
+      console.log('[予算設定] Access denied', {
+        has: !!budgetSet,
+        matches: budgetSet?.account_id === accountId,
+      });
       return { 成功: false, エラー: 'アクセス権限がありません' };
     }
 
@@ -479,11 +486,18 @@ export async function 予算設定(
       .eq('budget_category_id', categoryId)
       .single();
 
-    console.log('[予算設定] Existing budget check', { existing, existingError });
+    console.log('[予算設定] Existing budget check', {
+      existing,
+      existingError,
+    });
 
     if (existing) {
       // Update existing
-      console.log('[予算設定] Updating existing budget', { id: existing.id, 金額, 月別金額 });
+      console.log('[予算設定] Updating existing budget', {
+        id: existing.id,
+        金額,
+        月別金額,
+      });
       const { error } = await supabase
         .from('budgets')
         .update({
@@ -500,7 +514,13 @@ export async function 予算設定(
     } else {
       // Insert new
       const newId = crypto.randomUUID();
-      console.log('[予算設定] Inserting new budget', { newId, budgetSetId, categoryId, 金額, 月別金額 });
+      console.log('[予算設定] Inserting new budget', {
+        newId,
+        budgetSetId,
+        categoryId,
+        金額,
+        月別金額,
+      });
       const { error } = await supabase.from('budgets').insert({
         id: newId,
         budget_set_id: budgetSetId,
@@ -530,7 +550,10 @@ export async function 予算設定(
   } catch (err) {
     const errorMessage =
       err instanceof Error ? err.message : JSON.stringify(err);
-    console.error('[予算設定] Error caught', { error: errorMessage, stack: err instanceof Error ? err.stack : undefined });
+    console.error('[予算設定] Error caught', {
+      error: errorMessage,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
     logger.error('Failed to set budget', { error: errorMessage });
     return { 成功: false, エラー: '予算の設定に失敗しました' };
   }
