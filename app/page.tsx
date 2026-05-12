@@ -80,7 +80,8 @@ async function DataDisplay() {
   const sampleLifePlans = lifePlans;
 
   // Check if there is no data
-  const hasNoData = sampleFamilyMembers.length === 0 && sampleLifePlans.length === 0;
+  const hasNoData =
+    sampleFamilyMembers.length === 0 && sampleLifePlans.length === 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -103,53 +104,53 @@ async function DataDisplay() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* 家族メンバー */}
-          <section className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              家族メンバー
-            </h2>
-            <div className="space-y-3">
-              {sampleFamilyMembers.map((member) => (
-                <div
-                  key={member.ID}
-                  className="p-4 border border-gray-200 rounded-md hover:bg-gray-50"
-                >
-                  <h3 className="font-medium text-gray-900">{member.名前}</h3>
-                  <p className="text-sm text-gray-600">
-                    {member.続柄} •{' '}
-                    {member.生年月日.toLocaleDateString('ja-JP')}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* ライフプラン */}
-          <section className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              ライフプラン
-            </h2>
-            <div className="space-y-3">
-              {sampleLifePlans.map((plan) => {
-                const projections = planProjections.get(plan.ID) || [];
-                return (
+            {/* 家族メンバー */}
+            <section className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                家族メンバー
+              </h2>
+              <div className="space-y-3">
+                {sampleFamilyMembers.map((member) => (
                   <div
-                    key={plan.ID}
+                    key={member.ID}
                     className="p-4 border border-gray-200 rounded-md hover:bg-gray-50"
                   >
-                    <h3 className="font-medium text-gray-900">{plan.名前}</h3>
-                    <p className="text-sm text-gray-600">{plan.説明}</p>
-                    {plan.有効フラグ && (
-                      <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold bg-primary text-primary-text rounded">
-                        メインシナリオ
-                      </span>
-                    )}
-                    <LifePlanChart projections={projections} height={120} />
+                    <h3 className="font-medium text-gray-900">{member.名前}</h3>
+                    <p className="text-sm text-gray-600">
+                      {member.続柄} •{' '}
+                      {member.生年月日.toLocaleDateString('ja-JP')}
+                    </p>
                   </div>
-                );
-              })}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+
+            {/* ライフプラン */}
+            <section className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                ライフプラン
+              </h2>
+              <div className="space-y-3">
+                {sampleLifePlans.map((plan) => {
+                  const projections = planProjections.get(plan.ID) || [];
+                  return (
+                    <div
+                      key={plan.ID}
+                      className="p-4 border border-gray-200 rounded-md hover:bg-gray-50"
+                    >
+                      <h3 className="font-medium text-gray-900">{plan.名前}</h3>
+                      <p className="text-sm text-gray-600">{plan.説明}</p>
+                      {plan.有効フラグ && (
+                        <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold bg-primary text-primary-text rounded">
+                          メインシナリオ
+                        </span>
+                      )}
+                      <LifePlanChart projections={projections} height={120} />
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
           </div>
         )}
       </main>
