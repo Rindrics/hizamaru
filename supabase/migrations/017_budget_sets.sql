@@ -29,6 +29,7 @@ create index if not exists budgets_budget_category_id_idx on budgets(budget_cate
 
 -- Enable RLS
 alter table budget_sets enable row level security;
+alter table budgets enable row level security;
 
 -- RLS policies for budget_sets
 create policy "budget_sets_select" on budget_sets for select using (true);
@@ -44,6 +45,9 @@ create policy "budgets_delete" on budgets for delete using (true);
 
 -- Drop old demo-only RLS policies on budget_categories
 drop policy if exists "Allow reading demo budget categories" on budget_categories;
+
+-- Enable RLS on budget_categories
+alter table budget_categories enable row level security;
 
 -- Add permissive RLS policies for budget_categories
 create policy "budget_categories_select" on budget_categories for select using (true);

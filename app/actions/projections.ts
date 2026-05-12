@@ -128,7 +128,9 @@ export async function 年次予測計算(
     if (lifePlan.budget_set_id) {
       const { data: budgets } = await supabase
         .from('budgets')
-        .select('budget_category_id, budget_categories(id, name), amount')
+        .select(
+          'budget_category_id, budget_categories(id, name), amount, monthly_amounts'
+        )
         .eq('budget_set_id', lifePlan.budget_set_id);
 
       if (budgets) {
@@ -138,6 +140,8 @@ export async function 年次予測計算(
             category_name: (b.budget_categories as Record<string, unknown>)
               ?.name as string,
             amount: b.amount as number,
+            monthly_amounts:
+              (b.monthly_amounts as Record<string, number>) || undefined,
           }))
           .filter((b) => b.amount > 0);
       }

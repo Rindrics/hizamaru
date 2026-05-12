@@ -414,9 +414,14 @@ export async function 予算設定(
   formData: FormData
 ): Promise<{ 成功?: boolean; エラー?: string }> {
   try {
+    console.log('[予算設定] Start', { budgetSetId, categoryId });
+
     const accountId = await getAccountId();
+    console.log('[予算設定] Got accountId', { accountId });
+
     const 金額Str = formData.get('金額') as string;
     const 月別金額Str = formData.get('月別金額') as string;
+    console.log('[予算設定] FormData', { 金額Str, 月別金額Str });
 
     let 金額: number;
     let 月別金額: Record<string, number> | null = null;
@@ -424,6 +429,7 @@ export async function 予算設定(
     if (月別金額Str) {
       // 月別金額がある場合
       月別金額 = JSON.parse(月別金額Str);
+      console.log('[予算設定] Monthly amounts', { 月別金額 });
       logger.debug('Budget: set request with monthly amounts', {
         budgetSetId,
         categoryId,
@@ -436,12 +442,15 @@ export async function 予算設定(
         values.length > 0
           ? Math.round(values.reduce((sum, v) => sum + v, 0) / values.length)
           : 0;
+      console.log('[予算設定] Calculated amount from monthly', { 金額 });
     } else {
       // 単一金額の場合
       金額 = parseInt(金額Str, 10);
+      console.log('[予算設定] Single amount', { 金額 });
       logger.debug('Budget: set request', { budgetSetId, categoryId, 金額 });
 
       if (isNaN(金額) || 金額 < 0) {
+        console.log('[予算設定] Invalid amount');
         return { 成功: false, エラー: '金額は正の数値を入力してください' };
       }
     }
@@ -449,26 +458,32 @@ export async function 予算設定(
     const supabase = await getDbServerClient();
 
     // Verify ownership of budget set
-    const { data: budgetSet } = await supabase
+    const { data: budgetSet, error: budgetSetError } = await supabase
       .from('budget_sets')
       .select('account_id')
       .eq('id', budgetSetId)
       .single();
 
+    console.log('[予算設定] Budget set lookup', { budgetSetId, budgetSet, budgetSetError });
+
     if (!budgetSet || budgetSet.account_id !== accountId) {
+      console.log('[予算設定] Access denied', { has: !!budgetSet, matches: budgetSet?.account_id === accountId });
       return { 成功: false, エラー: 'アクセス権限がありません' };
     }
 
     // Check if budget already exists
-    const { data: existing } = await supabase
+    const { data: existing, error: existingError } = await supabase
       .from('budgets')
       .select('id')
       .eq('budget_set_id', budgetSetId)
       .eq('budget_category_id', categoryId)
       .single();
 
+    console.log('[予算設定] Existing budget check', { existing, existingError });
+
     if (existing) {
       // Update existing
+      console.log('[予算設定] Updating existing budget', { id: existing.id, 金額, 月別金額 });
       const { error } = await supabase
         .from('budgets')
         .update({
@@ -477,20 +492,31 @@ export async function 予算設定(
         })
         .eq('id', existing.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('[予算設定] Update error', error);
+        throw error;
+      }
+      console.log('[予算設定] Update successful');
     } else {
       // Insert new
+      const newId = crypto.randomUUID();
+      console.log('[予算設定] Inserting new budget', { newId, budgetSetId, categoryId, 金額, 月別金額 });
       const { error } = await supabase.from('budgets').insert({
-        id: crypto.randomUUID(),
+        id: newId,
         budget_set_id: budgetSetId,
         budget_category_id: categoryId,
         amount: 金額,
         monthly_amounts: 月別金額,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[予算設定] Insert error', error);
+        throw error;
+      }
+      console.log('[予算設定] Insert successful');
     }
 
+    console.log('[予算設定] Revalidating path');
     logger.info('Budget set', {
       budgetSetId,
       categoryId,
@@ -499,10 +525,12 @@ export async function 予算設定(
     });
     revalidatePath('/budget');
 
+    console.log('[予算設定] Complete');
     return { 成功: true };
   } catch (err) {
     const errorMessage =
       err instanceof Error ? err.message : JSON.stringify(err);
+    console.error('[予算設定] Error caught', { error: errorMessage, stack: err instanceof Error ? err.stack : undefined });
     logger.error('Failed to set budget', { error: errorMessage });
     return { 成功: false, エラー: '予算の設定に失敗しました' };
   }
