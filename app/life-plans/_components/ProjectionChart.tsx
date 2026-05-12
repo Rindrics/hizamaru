@@ -10,7 +10,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  type TooltipProps,
 } from 'recharts';
 import type { ProjectionYear } from '@/lib/projections/types';
 import { 年次予測計算 } from '@/app/actions/projections';
@@ -21,7 +20,17 @@ interface Props {
   lifePlanId: string;
 }
 
-function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    dataKey: string;
+    value: number;
+    fill?: string;
+    payload?: ProjectionYear & { hiddenIncome: number };
+  }>;
+}
+
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
 
   const d = payload[0].payload as ProjectionYear & { hiddenIncome: number };
