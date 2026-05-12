@@ -60,7 +60,8 @@ export default function BudgetAmountInput({
         onBlur={handleBlur}
         placeholder="0"
         min="0"
-        className="w-28 px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-right"
+        step="1000"
+        className="w-28 px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-right text-black"
       />
       <span className="text-sm text-gray-600 w-8">円</span>
     </form>
