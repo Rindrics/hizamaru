@@ -10,6 +10,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  type TooltipProps,
 } from 'recharts';
 import type { ProjectionYear } from '@/lib/projections/types';
 import { 年次予測計算 } from '@/app/actions/projections';
@@ -18,6 +19,51 @@ import { CHART_CONFIG, CHART_LEFT_MARGIN } from '../_constants/chartConfig';
 interface Props {
   projections: ProjectionYear[];
   lifePlanId: string;
+}
+
+function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null;
+
+  const d = payload[0].payload as ProjectionYear & { hiddenIncome: number };
+  const fmt = (n: number) => n.toLocaleString('ja-JP') + '円';
+  const budgetBreakdown = d.budgetBreakdown || [];
+  const budgetTotal = budgetBreakdown.reduce((s, b) => s + b.amount, 0);
+  const otherExpense = d.totalExpense - budgetTotal;
+
+  const incomeBar = payload.find(
+    (p: typeof payload[number]) => p.dataKey === 'totalIncome'
+  );
+  const incomeColor = incomeBar?.fill || 'var(--color-success)';
+
+  const expenseBar = payload.find(
+    (p: typeof payload[number]) => p.dataKey === 'totalExpense'
+  );
+  const expenseColor = expenseBar?.fill || 'var(--color-primary)';
+
+  return (
+    <div className="bg-white border border-gray-200 rounded p-3 text-sm shadow-sm min-w-40">
+      <p className="font-semibold mb-2 text-black">{d.year}年</p>
+      <p style={{ color: incomeColor }}>収入: {fmt(d.totalIncome)}</p>
+      <p className="mt-1" style={{ color: expenseColor }}>支出合計: {fmt(d.totalExpense)}</p>
+      {budgetBreakdown.map((b) => (
+        <p
+          key={b.categoryId}
+          className="flex items-center gap-1 ml-2 text-xs"
+          style={{ color: expenseColor }}
+        >
+          <span
+            className="w-2 h-2 rounded-full flex-shrink-0"
+            style={{ backgroundColor: b.color }}
+          />
+          {b.categoryName}: {fmt(b.amount)}
+        </p>
+      ))}
+      {otherExpense > 0 && (
+        <p className="ml-2 text-xs text-gray-500">その他: {fmt(otherExpense)}</p>
+      )}
+      <p className="mt-1 text-black">資産合計: {fmt(d.totalAssets)}</p>
+    </div>
+  );
 }
 
 const {
@@ -210,12 +256,7 @@ export default function ProjectionChart({
                 width={30}
               />
               <YAxis tick={{ fontSize: 12 }} width={Y_AXIS_WIDTH} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #ccc',
-                }}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Bar
                 dataKey="totalIncome"
                 fill="var(--color-success)"

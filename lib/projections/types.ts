@@ -1,9 +1,17 @@
+export interface BudgetBreakdownItem {
+  categoryId: string;
+  categoryName: string;
+  color: string;
+  amount: number; // 年額
+}
+
 export interface ProjectionYear {
   year: number;
   members: MemberProjection[];
   totalIncome: number;
   totalExpense: number;
   totalAssets: number;
+  budgetBreakdown: BudgetBreakdownItem[];
 }
 
 export interface MemberProjection {
@@ -58,6 +66,7 @@ export interface LifeEventData {
 export interface BudgetData {
   categoryId: string;
   categoryName: string;
+  color: string;
   amount: number;
   monthlyAmounts?: Record<string, number>; // 月別金額: { "1": 30000, "2": 32000, ... }
 }

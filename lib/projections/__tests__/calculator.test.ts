@@ -251,6 +251,7 @@ describe('calculateYearlyProjections', () => {
           cost: 5000000,
         },
       ],
+      budgetData: [],
       initialAssets: 0,
     };
 

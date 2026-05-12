@@ -7,6 +7,7 @@ import {
   AnnualCostData,
   LifeEventData,
   BudgetData,
+  BudgetBreakdownItem,
 } from './types';
 
 function calculateAge(birthDate: string, year: number): number {
@@ -109,21 +110,19 @@ function getLifeEventCostForYear(
     .reduce((sum, e) => sum + e.cost, 0);
 }
 
-function getBudgetExpenseForYear(budgetData: BudgetData[]): number {
-  return budgetData.reduce((sum, b) => {
-    if (b.monthlyAmounts && Object.keys(b.monthlyAmounts).length > 0) {
-      // 月別金額がある場合は、全月の合計を使用
-      return (
-        sum +
-        Object.values(b.monthlyAmounts).reduce(
-          (total, amount) => total + amount,
-          0
-        )
-      );
-    }
-    // 月別金額がない場合は、単一金額を12倍（月額 × 12）
-    return sum + b.amount * 12;
-  }, 0);
+function getBudgetBreakdownForYear(budgetData: BudgetData[]): BudgetBreakdownItem[] {
+  return budgetData.map((b) => {
+    const annualAmount =
+      b.monthlyAmounts && Object.keys(b.monthlyAmounts).length > 0
+        ? Object.values(b.monthlyAmounts).reduce((total, amount) => total + amount, 0)
+        : b.amount * 12;
+    return {
+      categoryId: b.categoryId,
+      categoryName: b.categoryName,
+      color: b.color,
+      amount: annualAmount,
+    };
+  });
 }
 
 function calculateMemberProjection(
@@ -150,7 +149,8 @@ function calculateMemberProjection(
     familyMemberId,
     year
   );
-  const budgetExpense = getBudgetExpenseForYear(input.budgetData);
+  const budgetBreakdown = getBudgetBreakdownForYear(input.budgetData);
+  const budgetExpense = budgetBreakdown.reduce((sum, b) => sum + b.amount, 0);
 
   return {
     familyMemberId,
@@ -168,6 +168,8 @@ export function calculateYearlyProjections(
   let cumulativeAssets = input.initialAssets;
 
   const endYear = input.baseYear + input.targetAge;
+
+  const budgetBreakdown = getBudgetBreakdownForYear(input.budgetData);
 
   for (let year = input.baseYear; year <= endYear; year++) {
     const members: MemberProjection[] = input.familyMembers.map((member) =>
@@ -192,6 +194,7 @@ export function calculateYearlyProjections(
       totalIncome,
       totalExpense,
       totalAssets: Math.round(cumulativeAssets),
+      budgetBreakdown,
     });
   }
 
