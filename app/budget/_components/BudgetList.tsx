@@ -174,8 +174,10 @@ export default function BudgetList({
     if (!budget) return { amount: null };
     return {
       amount: budget.金額 ?? null,
-      monthlyAmounts: (budget as Record<string, unknown>)
-        .月別金額 as Record<string, number>,
+      monthlyAmounts: (budget as Record<string, unknown>).月別金額 as Record<
+        string,
+        number
+      >,
     };
   };
 

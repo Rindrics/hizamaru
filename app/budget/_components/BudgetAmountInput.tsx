@@ -44,7 +44,10 @@ export default function BudgetAmountInput({
   const [monthlyValues, setMonthlyValues] = useState<Record<string, string>>(
     monthlyAmounts
       ? Object.fromEntries(
-          Object.entries(monthlyAmounts).map(([key, val]) => [key, val.toString()])
+          Object.entries(monthlyAmounts).map(([key, val]) => [
+            key,
+            val.toString(),
+          ])
         )
       : Object.fromEntries(MONTHS.map((_, i) => [(i + 1).toString(), '']))
   );

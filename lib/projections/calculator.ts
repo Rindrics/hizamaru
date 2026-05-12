@@ -115,7 +115,10 @@ function getBudgetExpenseForYear(budgetData: BudgetData[]): number {
       // 月別金額がある場合は、全月の合計を使用
       return (
         sum +
-        Object.values(b.monthlyAmounts).reduce((total, amount) => total + amount, 0)
+        Object.values(b.monthlyAmounts).reduce(
+          (total, amount) => total + amount,
+          0
+        )
       );
     }
     // 月別金額がない場合は、単一金額を12倍（月額 × 12）
