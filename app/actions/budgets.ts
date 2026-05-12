@@ -367,13 +367,11 @@ export async function 予算セット複製(
 
     // Create new set with copied name
     const newSetId = crypto.randomUUID();
-    const { error: insertError } = await supabase
-      .from('budget_sets')
-      .insert({
-        id: newSetId,
-        account_id: accountId,
-        name: `${sourceSet.name}のコピー`,
-      });
+    const { error: insertError } = await supabase.from('budget_sets').insert({
+      id: newSetId,
+      account_id: accountId,
+      name: `${sourceSet.name}のコピー`,
+    });
 
     if (insertError) throw insertError;
 
