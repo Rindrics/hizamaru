@@ -438,9 +438,7 @@ export async function 予算設定(
 
       // 月別金額から平均を計算（保存用）
       const values = 月別金額
-        ? Object.values(月別金額 as Record<string, number>).filter(
-            (v) => v > 0
-          )
+        ? Object.values(月別金額 as Record<string, number>).filter((v) => v > 0)
         : [];
       金額 =
         values.length > 0
