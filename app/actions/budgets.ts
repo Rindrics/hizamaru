@@ -339,6 +339,72 @@ export async function 予算セット削除(id: string): Promise<void> {
   }
 }
 
+export async function 予算セット複製(
+  id: string
+): Promise<{ 成功?: boolean; エラー?: string }> {
+  try {
+    const accountId = await getAccountId();
+    const supabase = await getDbServerClient();
+
+    logger.debug('BudgetSet: duplicate request', { id });
+
+    // Verify ownership and get source set
+    const { data: sourceSet } = await supabase
+      .from('budget_sets')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (!sourceSet || sourceSet.account_id !== accountId) {
+      throw new Error('アクセス権限がありません');
+    }
+
+    // Get existing budgets
+    const { data: sourceBudgets } = await supabase
+      .from('budgets')
+      .select('*')
+      .eq('budget_set_id', id);
+
+    // Create new set with copied name
+    const newSetId = crypto.randomUUID();
+    const { error: insertError } = await supabase
+      .from('budget_sets')
+      .insert({
+        id: newSetId,
+        account_id: accountId,
+        name: `${sourceSet.name}のコピー`,
+      });
+
+    if (insertError) throw insertError;
+
+    // Copy budgets if they exist
+    if (sourceBudgets && sourceBudgets.length > 0) {
+      const budgetsToInsert = sourceBudgets.map((budget) => ({
+        id: crypto.randomUUID(),
+        budget_set_id: newSetId,
+        budget_category_id: budget.budget_category_id,
+        amount: budget.amount,
+      }));
+
+      const { error: budgetInsertError } = await supabase
+        .from('budgets')
+        .insert(budgetsToInsert);
+
+      if (budgetInsertError) throw budgetInsertError;
+    }
+
+    logger.info('Budget set duplicated', { sourceId: id, newSetId });
+    revalidatePath('/budget');
+
+    return { 成功: true };
+  } catch (err) {
+    const errorMessage =
+      err instanceof Error ? err.message : JSON.stringify(err);
+    logger.error('Failed to duplicate budget set', { error: errorMessage });
+    return { 成功: false, エラー: 'セットの複製に失敗しました' };
+  }
+}
+
 // Budget Amounts
 
 export async function 予算設定(

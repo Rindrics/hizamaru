@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2, Edit2 } from 'lucide-react';
+import { Trash2, Edit2, Copy } from 'lucide-react';
 import FamilyMemberModal from '@/app/family/_components/FamilyMemberModal';
 import ConfirmDialog from '@/app/family/_components/ConfirmDialog';
 import Toast from '@/app/_components/Toast';
@@ -11,6 +11,7 @@ import {
   予算セット削除,
   予算セット作成,
   予算セット更新,
+  予算セット複製,
   予算カテゴリ削除,
   予算カテゴリ作成,
   予算カテゴリ更新,
@@ -147,6 +148,22 @@ export default function BudgetList({
     }
   };
 
+  const handleDuplicateSet = async (setId: string) => {
+    try {
+      info('複製中...', 1.0, 'processing');
+      const result = await 予算セット複製(setId);
+      if (result?.成功) {
+        success('セットを複製しました', 1.0, 'completed');
+        setTimeout(() => router.refresh(), 1500);
+      } else {
+        showError(result?.エラー || '複製に失敗しました', 2.0);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      showError(`複製に失敗しました: ${message}`, 3.0);
+    }
+  };
+
   const getBudgetAmount = (
     budgetSetId: string,
     categoryId: string
@@ -261,6 +278,13 @@ export default function BudgetList({
                         title="編集"
                       >
                         <Edit2 size={18} strokeWidth={2.5} />
+                      </button>
+                      <button
+                        onClick={() => handleDuplicateSet(set.ID)}
+                        className="inline-block hover:opacity-70 transition-opacity p-1 text-primary"
+                        title="複製"
+                      >
+                        <Copy size={18} strokeWidth={2.5} />
                       </button>
                       <button
                         onClick={() => handleDeleteSet(set.ID, set.名前)}
