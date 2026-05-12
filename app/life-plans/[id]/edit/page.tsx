@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getDbServerClient } from '@/lib/db';
 import { ライフプランRepo } from '@/lib/repositories';
-import { ライフプラン更新 } from '@/app/actions/lifePlans';
+import { ライフプラン更新, 予算セット一覧取得 } from '@/app/actions/lifePlans';
 import LifePlanForm from '../../_components/LifePlanForm';
 import IncomeSection from '../../_components/IncomeSection';
 import BudgetSetSelector from '../../_components/BudgetSetSelector';
@@ -70,12 +70,7 @@ export default async function EditLifePlanPage({ params }: Props) {
   // Fetch budget sets
   let budgetSets: 予算セット[] = [];
   try {
-    const { data: sets } = await supabase
-      .from('budget_sets')
-      .select('*')
-      .eq('account_id', userData.account_id);
-
-    budgetSets = sets || [];
+    budgetSets = await 予算セット一覧取得();
   } catch (err) {
     // Log error but don't fail the page
   }

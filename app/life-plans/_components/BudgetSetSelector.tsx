@@ -49,7 +49,7 @@ export default function BudgetSetSelector({
         value={currentBudgetSetId || ''}
         onChange={handleChange}
         disabled={isPending}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 text-black"
       >
         <option value="">選択なし</option>
         {budgetSets.map((set) => (

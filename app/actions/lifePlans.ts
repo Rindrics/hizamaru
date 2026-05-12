@@ -199,6 +199,33 @@ export async function ライフプラン一覧取得() {
   }
 }
 
+export async function 予算セット一覧取得(): Promise<
+  Array<{ ID: string; アカウントID: string; 名前: string; 作成日: Date }>
+> {
+  try {
+    const accountId = await getAccountId();
+    const supabase = await getDbServerClient();
+
+    const { data, error } = await supabase
+      .from('budget_sets')
+      .select('*')
+      .eq('account_id', accountId);
+
+    if (error) throw error;
+
+    return (data || []).map((record: Record<string, unknown>) => ({
+      ID: record.id as string,
+      アカウントID: record.account_id as string,
+      名前: record.name as string,
+      作成日: new Date(record.created_at as string),
+    }));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logger.error('Failed to fetch budget sets', { error: message });
+    throw err;
+  }
+}
+
 export async function 予算セット設定(
   lifePlanId: string,
   budgetSetId: string | null
