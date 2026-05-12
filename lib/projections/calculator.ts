@@ -6,6 +6,8 @@ import {
   HobbyActivityExpense,
   AnnualCostData,
   LifeEventData,
+  BudgetData,
+  BudgetBreakdownItem,
 } from './types';
 
 function calculateAge(birthDate: string, year: number): number {
@@ -108,6 +110,26 @@ function getLifeEventCostForYear(
     .reduce((sum, e) => sum + e.cost, 0);
 }
 
+function getBudgetBreakdownForYear(
+  budgetData: BudgetData[]
+): BudgetBreakdownItem[] {
+  return budgetData.map((b) => {
+    const annualAmount =
+      b.monthlyAmounts && Object.keys(b.monthlyAmounts).length > 0
+        ? Object.values(b.monthlyAmounts).reduce(
+            (total, amount) => total + amount,
+            0
+          )
+        : b.amount * 12;
+    return {
+      categoryId: b.categoryId,
+      categoryName: b.categoryName,
+      color: b.color,
+      amount: annualAmount,
+    };
+  });
+}
+
 function calculateMemberProjection(
   familyMemberId: string,
   name: string,
@@ -132,13 +154,15 @@ function calculateMemberProjection(
     familyMemberId,
     year
   );
+  const budgetBreakdown = getBudgetBreakdownForYear(input.budgetData);
+  const budgetExpense = budgetBreakdown.reduce((sum, b) => sum + b.amount, 0);
 
   return {
     familyMemberId,
     name,
     age,
     income,
-    expense: hobbyExpense + annualCosts + lifeEventCost,
+    expense: hobbyExpense + annualCosts + lifeEventCost + budgetExpense,
   };
 }
 
@@ -149,6 +173,8 @@ export function calculateYearlyProjections(
   let cumulativeAssets = input.initialAssets;
 
   const endYear = input.baseYear + input.targetAge;
+
+  const budgetBreakdown = getBudgetBreakdownForYear(input.budgetData);
 
   for (let year = input.baseYear; year <= endYear; year++) {
     const members: MemberProjection[] = input.familyMembers.map((member) =>
@@ -173,6 +199,7 @@ export function calculateYearlyProjections(
       totalIncome,
       totalExpense,
       totalAssets: Math.round(cumulativeAssets),
+      budgetBreakdown,
     });
   }
 

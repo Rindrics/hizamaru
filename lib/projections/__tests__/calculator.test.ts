@@ -33,6 +33,7 @@ describe('calculateYearlyProjections', () => {
       hobbyExpenses: [],
       annualCosts: [],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 1000000,
     };
 
@@ -75,6 +76,7 @@ describe('calculateYearlyProjections', () => {
       hobbyExpenses: [],
       annualCosts: [],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 0,
     };
 
@@ -134,6 +136,7 @@ describe('calculateYearlyProjections', () => {
       hobbyExpenses: [],
       annualCosts: [],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 0,
     };
 
@@ -170,6 +173,7 @@ describe('calculateYearlyProjections', () => {
       ],
       annualCosts: [],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 0,
     };
 
@@ -211,6 +215,7 @@ describe('calculateYearlyProjections', () => {
         },
       ],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 0,
     };
 
@@ -246,6 +251,7 @@ describe('calculateYearlyProjections', () => {
           cost: 5000000,
         },
       ],
+      budgetData: [],
       initialAssets: 0,
     };
 
@@ -292,6 +298,7 @@ describe('calculateYearlyProjections', () => {
       hobbyExpenses: [],
       annualCosts: [],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 1000000,
     };
 
@@ -353,6 +360,7 @@ describe('calculateYearlyProjections', () => {
       hobbyExpenses: [],
       annualCosts: [],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 0,
     };
 
@@ -380,6 +388,7 @@ describe('calculateYearlyProjections', () => {
       hobbyExpenses: [],
       annualCosts: [],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 0,
     };
 
@@ -427,6 +436,7 @@ describe('calculateYearlyProjections', () => {
       hobbyExpenses: [],
       annualCosts: [],
       lifeEvents: [],
+      budgetData: [],
       initialAssets: 0,
     };
 

@@ -49,6 +49,12 @@ export default function Navbar({ user }: { user: User | null }) {
                 >
                   家族
                 </Link>
+                <Link
+                  href="/budget"
+                  className="text-sm text-gray-700 hover:text-primary"
+                >
+                  家計簿
+                </Link>
               </>
             )}
             {user && (

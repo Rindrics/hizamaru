@@ -118,6 +118,40 @@ export async function 年次予測計算(
       .select('*')
       .eq('life_plan_id', lifePlanId);
 
+    // Fetch budget data if budget set is assigned
+    let budgetAmounts: Array<{
+      category_id: string;
+      category_name: string;
+      category_color: string;
+      amount: number;
+      monthly_amounts?: Record<string, number>;
+    }> = [];
+
+    if (lifePlan.budget_set_id) {
+      const { data: budgets } = await supabase
+        .from('budgets')
+        .select(
+          'budget_category_id, budget_categories(id, name, color), amount, monthly_amounts'
+        )
+        .eq('budget_set_id', lifePlan.budget_set_id);
+
+      if (budgets) {
+        budgetAmounts = budgets
+          .map((b: Record<string, unknown>) => {
+            const cat = b.budget_categories as Record<string, unknown>;
+            return {
+              category_id: b.budget_category_id as string,
+              category_name: cat?.name as string,
+              category_color: (cat?.color as string) || '#808080',
+              amount: b.amount as number,
+              monthly_amounts:
+                (b.monthly_amounts as Record<string, number>) || undefined,
+            };
+          })
+          .filter((b) => b.amount > 0);
+      }
+    }
+
     // Build projection input
     const baseYear = new Date().getFullYear();
 
@@ -202,6 +236,13 @@ export async function 年次予測計算(
               cost: e.home_price || 0,
             }))
         : [],
+      budgetData: budgetAmounts.map((b) => ({
+        categoryId: b.category_id,
+        categoryName: b.category_name,
+        color: b.category_color,
+        amount: b.amount,
+        monthlyAmounts: b.monthly_amounts || undefined,
+      })),
       initialAssets: 0,
     };
 

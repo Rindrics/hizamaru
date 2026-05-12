@@ -2,9 +2,11 @@ import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getDbServerClient } from '@/lib/db';
 import { ライフプランRepo } from '@/lib/repositories';
-import { ライフプラン更新 } from '@/app/actions/lifePlans';
+import { ライフプラン更新, 予算セット一覧取得 } from '@/app/actions/lifePlans';
 import LifePlanForm from '../../_components/LifePlanForm';
 import IncomeSection from '../../_components/IncomeSection';
+import BudgetSetSelector from '../../_components/BudgetSetSelector';
+import type { 予算セット } from '@/types';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -65,6 +67,14 @@ export default async function EditLifePlanPage({ params }: Props) {
     .from('hobby_activity_annual_costs')
     .select('*');
 
+  // Fetch budget sets
+  let budgetSets: 予算セット[] = [];
+  try {
+    budgetSets = await 予算セット一覧取得();
+  } catch (err) {
+    // Log error but don't fail the page
+  }
+
   const actionWithId = ライフプラン更新.bind(null, id);
 
   return (
@@ -85,6 +95,17 @@ export default async function EditLifePlanPage({ params }: Props) {
           </h1>
 
           <LifePlanForm action={actionWithId} defaultValues={plan} />
+
+          <div className="mt-6 border-t pt-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              予算設定
+            </h2>
+            <BudgetSetSelector
+              lifePlanId={id}
+              currentBudgetSetId={plan.予算セットID}
+              budgetSets={budgetSets}
+            />
+          </div>
 
           <IncomeSection
             lifePlanId={id}

@@ -14,6 +14,7 @@ export class ライフプランSupabaseRepository implements ライフプランR
       名前: p.name as string,
       説明: (p.description as string) || null,
       有効フラグ: p.is_active as boolean,
+      予算セットID: (p.budget_set_id as string) || undefined,
       作成日: new Date(p.created_at as string),
       更新日: new Date(p.updated_at as string),
     };
