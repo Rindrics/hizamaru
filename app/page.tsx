@@ -1,7 +1,10 @@
 import { getDbServerClient } from '@/lib/db';
 import { fetchUserData } from '@/app/actions/data';
-import type { 家族メンバー, ライフプラン, ライフイベント } from '@/types';
+import type { 家族メンバー, ライフプラン } from '@/types';
+import type { ProjectionYear } from '@/lib/projections/types';
 import { logger } from '@/lib/logger';
+import { 年次予測計算 } from '@/app/actions/projections';
+import LifePlanChart from '@/app/_components/LifePlanChart';
 
 async function DataDisplay() {
   logger.debug('DataDisplay: start');
@@ -34,13 +37,27 @@ async function DataDisplay() {
 
   let familyMembers: 家族メンバー[] = [];
   let lifePlans: ライフプラン[] = [];
-  let lifeEvents: ライフイベント[] = [];
+  const planProjections: Map<string, ProjectionYear[]> = new Map();
 
   try {
     const data = await fetchUserData();
     familyMembers = data.familyMembers;
     lifePlans = data.lifePlans;
-    lifeEvents = data.lifeEvents;
+
+    // Fetch projections for each plan
+    for (const plan of lifePlans) {
+      try {
+        const result = await 年次予測計算(plan.ID);
+        if (result.データ) {
+          planProjections.set(plan.ID, result.データ);
+        }
+      } catch (err) {
+        logger.debug('Failed to fetch projections for plan', {
+          planId: plan.ID,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    }
   } catch (err) {
     // Failed to fetch user data - show empty data
     logger.debug('DataDisplay: failed to fetch user data', {
@@ -48,12 +65,10 @@ async function DataDisplay() {
     });
     familyMembers = [];
     lifePlans = [];
-    lifeEvents = [];
   }
 
   const sampleFamilyMembers = familyMembers;
   const sampleLifePlans = lifePlans;
-  const sampleLifeEvents = lifeEvents;
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -64,20 +79,24 @@ async function DataDisplay() {
               ライフプラン
             </h2>
             <div className="space-y-3">
-              {sampleLifePlans.map((plan) => (
-                <div
-                  key={plan.ID}
-                  className="p-4 border border-gray-200 rounded-md hover:bg-gray-50"
-                >
-                  <h3 className="font-medium text-gray-900">{plan.名前}</h3>
-                  <p className="text-sm text-gray-600">{plan.説明}</p>
-                  {plan.有効フラグ && (
-                    <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold bg-primary text-primary-text rounded">
-                      メインシナリオ
-                    </span>
-                  )}
-                </div>
-              ))}
+              {sampleLifePlans.map((plan) => {
+                const projections = planProjections.get(plan.ID) || [];
+                return (
+                  <div
+                    key={plan.ID}
+                    className="p-4 border border-gray-200 rounded-md hover:bg-gray-50"
+                  >
+                    <h3 className="font-medium text-gray-900">{plan.名前}</h3>
+                    <p className="text-sm text-gray-600">{plan.説明}</p>
+                    {plan.有効フラグ && (
+                      <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold bg-primary text-primary-text rounded">
+                        メインシナリオ
+                      </span>
+                    )}
+                    <LifePlanChart projections={projections} height={120} />
+                  </div>
+                );
+              })}
             </div>
           </section>
 
@@ -102,65 +121,6 @@ async function DataDisplay() {
             </div>
           </section>
         </div>
-
-        {/* ライフイベント */}
-        <section className="mt-6 bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            ライフイベント
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    イベント名
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    種別
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    年
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    詳細
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {sampleLifeEvents.map((event) => {
-                  let eventName: string = event.イベント種別;
-                  let details = '';
-
-                  if (event.イベント種別 === '出産') {
-                    const member = sampleFamilyMembers.find(
-                      (m) => m.ID === event.家族メンバーID
-                    );
-                    eventName = `${member?.名前}誕生`;
-                  } else if (event.イベント種別 === '住宅購入') {
-                    details = `${event.住宅価格.toLocaleString()}円 • ${event.ローン返済年数}年ローン`;
-                  }
-
-                  return (
-                    <tr key={event.ID} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {eventName}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {event.イベント種別}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {event.イベント年}年
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {details}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
       </main>
     </div>
   );

@@ -1,14 +1,23 @@
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Copy, Edit2 } from 'lucide-react';
+import {
+  ComposedChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import type { ライフプラン } from '@/types';
+import type { ProjectionYear } from '@/lib/projections/types';
 import {
   ライフプラン削除,
   ライフプランをメインにする,
   ライフプラン複製,
-  ライフプラン一覧取得,
 } from '@/app/actions/lifePlans';
 import FamilyMemberModal from '@/app/family/_components/FamilyMemberModal';
 import LifePlanForm from './LifePlanForm';
@@ -16,13 +25,20 @@ import ConfirmDialog from '@/app/family/_components/ConfirmDialog';
 import { ライフプラン追加 } from '@/app/actions/lifePlans';
 import Toast from '@/app/_components/Toast';
 import { useToast } from '@/lib/hooks/useToast';
+import { CHART_CONFIG, CHART_LEFT_MARGIN } from '../_constants/chartConfig';
 
-interface Props {
-  plans: ライフプラン[];
+interface LifePlanWithProjection {
+  plan: ライフプラン;
+  projections: ProjectionYear[];
 }
 
-export default function LifePlanList({ plans: initialPlans }: Props) {
-  const [displayPlans, setDisplayPlans] = useState<ライフプラン[] | null>(null);
+interface Props {
+  plansWithProjections: LifePlanWithProjection[];
+}
+
+export default function LifePlanList({
+  plansWithProjections: initialPlansWithProjections,
+}: Props) {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     id: string;
@@ -41,12 +57,9 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
   const { toasts, remove, info, success } = useToast();
   const router = useRouter();
 
-  // リロード直後はソート済みを使い、操作後はソート前の順序を保つ
-  const plansToDisplay =
-    displayPlans ||
-    [...initialPlans].sort(
-      (a, b) => (b.有効フラグ ? 1 : 0) - (a.有効フラグ ? 1 : 0)
-    );
+  const plansToDisplay = [...initialPlansWithProjections].sort(
+    (a, b) => (b.plan.有効フラグ ? 1 : 0) - (a.plan.有効フラグ ? 1 : 0)
+  );
 
   const handleAddClose = () => {
     setIsAddOpen(false);
@@ -61,16 +74,20 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
   };
 
   const handleDeleteConfirm = (planId: string) => {
-    const plan = plansToDisplay.find((p) => p.ID === planId);
-    if (plan) {
-      setDeleteConfirm({ id: planId, name: plan.名前, type: 'delete' });
+    const planData = plansToDisplay.find((p) => p.plan.ID === planId);
+    if (planData) {
+      setDeleteConfirm({
+        id: planId,
+        name: planData.plan.名前,
+        type: 'delete',
+      });
     }
   };
 
   const handleDuplicateConfirm = (planId: string) => {
-    const plan = plansToDisplay.find((p) => p.ID === planId);
-    if (plan) {
-      setDuplicateConfirm({ id: planId, name: plan.名前 });
+    const planData = plansToDisplay.find((p) => p.plan.ID === planId);
+    if (planData) {
+      setDuplicateConfirm({ id: planId, name: planData.plan.名前 });
     }
   };
 
@@ -100,10 +117,8 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
         await ライフプラン削除(deleteConfirm.id);
         success('削除完了', 1.0, 'completed');
       }
-      // Fetch fresh data after the DB update.
-      const updatedPlans = await ライフプラン一覧取得();
-      setDisplayPlans(updatedPlans);
       setHighlightedPlanId(null);
+      setTimeout(() => router.refresh(), 2500);
     } catch (err) {
       console.error('Error:', err);
     } finally {
@@ -126,108 +141,140 @@ export default function LifePlanList({ plans: initialPlans }: Props) {
           + 追加
         </button>
       </div>
+
       <div className="px-6 pb-6">
         {plansToDisplay.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             ライフプランが作成されていません
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    プラン名
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    説明
-                  </th>
-                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-900">
-                    メインプラン
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    操作
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                className={`divide-y divide-gray-200 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${
+              isLoading ? 'opacity-50 pointer-events-none' : ''
+            }`}
+          >
+            {plansToDisplay.map(({ plan, projections }) => (
+              <div
+                key={plan.ID}
+                className={`rounded-lg border-2 p-4 transition-all duration-300 ${
+                  highlightedPlanId === plan.ID
+                    ? 'border-primary bg-blue-50 shadow-lg'
+                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                } ${plan.有効フラグ ? 'ring-2 ring-primary ring-offset-2' : ''}`}
               >
-                {plansToDisplay.map((plan) => (
-                  <tr
-                    key={plan.ID}
-                    className={`transition-all duration-500 ${
-                      highlightedPlanId === plan.ID
-                        ? 'bg-blue-50 drop-shadow-md'
-                        : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    <td
-                      onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
-                      className="px-6 py-4 text-sm font-medium text-gray-900 cursor-pointer"
-                    >
-                      {plan.名前}
-                    </td>
-                    <td
-                      onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
-                      className="px-6 py-4 text-sm text-gray-600 cursor-pointer"
-                    >
-                      {plan.説明 || '-'}
-                    </td>
-                    <td
-                      className="px-6 py-4 text-sm text-center"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <input
-                        type="radio"
-                        name="main-plan"
-                        value={plan.ID}
-                        checked={plan.有効フラグ}
-                        autoComplete="off"
-                        onChange={() => {
-                          if (plan.有効フラグ) return;
-                          setDeleteConfirm({
-                            id: plan.ID,
-                            name: plan.名前,
-                            type: 'setMain',
-                          });
+                <h3
+                  onClick={() => router.push(`/life-plans/${plan.ID}`)}
+                  className="text-lg font-semibold text-gray-900 mb-1 cursor-pointer hover:text-primary"
+                >
+                  {plan.名前}
+                </h3>
+
+                <p
+                  onClick={() => router.push(`/life-plans/${plan.ID}`)}
+                  className="text-sm text-gray-600 mb-4 cursor-pointer hover:text-gray-900"
+                >
+                  {plan.説明 || '-'}
+                </p>
+
+                {projections.length > 0 && (
+                  <div className="mb-4 -mx-4 px-4">
+                    <ResponsiveContainer width="100%" height={150}>
+                      <ComposedChart
+                        data={projections.map((d) => ({
+                          ...d,
+                          hiddenIncome: Math.max(
+                            0,
+                            d.totalExpense - d.totalIncome
+                          ),
+                        }))}
+                        barCategoryGap={CHART_CONFIG.BAR_CATEGORY_GAP}
+                        barGap={CHART_CONFIG.BAR_GAP}
+                        margin={{
+                          top: CHART_CONFIG.CHART_MARGIN_TOP,
+                          right: CHART_CONFIG.CHART_RIGHT_MARGIN,
+                          left: CHART_LEFT_MARGIN,
+                          bottom: CHART_CONFIG.CHART_MARGIN_BOTTOM,
                         }}
-                        className="w-4 h-4 accent-primary"
-                      />
-                    </td>
-                    <td
-                      className="px-6 py-4 text-sm space-x-3"
-                      onClick={(e) => e.stopPropagation()}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="year"
+                          tick={{ fontSize: 12 }}
+                          width={30}
+                        />
+                        <YAxis tick={{ fontSize: 12 }} width={60} />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #ccc',
+                          }}
+                        />
+                        <Bar
+                          dataKey="totalIncome"
+                          fill="var(--color-success)"
+                          isAnimationActive={false}
+                        />
+                        <Bar
+                          dataKey="totalExpense"
+                          fill="var(--color-primary)"
+                          fillOpacity={0.3}
+                          isAnimationActive={false}
+                        />
+                        <Bar
+                          dataKey="hiddenIncome"
+                          fill="var(--color-danger)"
+                          isAnimationActive={false}
+                        />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-2 border-t border-gray-100">
+                  {plan.有効フラグ ? (
+                    <div className="inline-block bg-primary text-primary-text text-xs font-semibold px-2 py-1 rounded">
+                      メインプラン
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setDeleteConfirm({
+                          id: plan.ID,
+                          name: plan.名前,
+                          type: 'setMain',
+                        });
+                      }}
+                      className="text-sm text-primary hover:text-primary-hover font-medium"
                     >
-                      <button
-                        onClick={() =>
-                          router.push(`/life-plans/${plan.ID}/edit`)
-                        }
-                        className="text-primary hover:text-primary-hover inline-block"
-                        title="編集"
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDuplicateConfirm(plan.ID)}
-                        className="text-primary hover:text-primary-hover inline-block"
-                        title="複製"
-                      >
-                        <Copy size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteConfirm(plan.ID)}
-                        className="inline-block hover:opacity-70 transition-opacity"
-                        title="削除"
-                        style={{ color: '#F28379' }}
-                      >
-                        <Trash2 size={20} strokeWidth={2.5} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      メインに設定
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => router.push(`/life-plans/${plan.ID}/edit`)}
+                    className="ml-auto text-primary hover:text-primary-hover inline-block p-1"
+                    title="編集"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDuplicateConfirm(plan.ID)}
+                    className="text-primary hover:text-primary-hover inline-block p-1"
+                    title="複製"
+                  >
+                    <Copy size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteConfirm(plan.ID)}
+                    className="inline-block hover:opacity-70 transition-opacity p-1"
+                    title="削除"
+                    style={{ color: '#F28379' }}
+                  >
+                    <Trash2 size={18} strokeWidth={2.5} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

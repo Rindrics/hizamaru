@@ -1,57 +1,180 @@
-import type { 年次予測 } from '@/types';
+import {
+  ProjectionYear,
+  MemberProjection,
+  ProjectionInput,
+  IncomeData,
+  HobbyActivityExpense,
+  AnnualCostData,
+  LifeEventData,
+} from './types';
 
-interface 年別月給 {
-  年: number;
-  月給: number;
-  ボーナス月数?: number;
+function calculateAge(birthDate: string, year: number): number {
+  const birthYear = parseInt(birthDate.substring(0, 4));
+  const birthMonth = parseInt(birthDate.substring(5, 7));
+  const currentMonth = 1; // 1月時点での年齢
+
+  let age = year - birthYear;
+  if (currentMonth < birthMonth) {
+    age--;
+  }
+  return age;
 }
 
-interface 計算入力 {
-  初期資産: number;
-  年別月給リスト: 年別月給[];
-  投資利回り: number;
-  開始年: number;
-  対象年数: number;
-}
+function getIncomeForYear(
+  incomeData: IncomeData[],
+  familyMemberId: string,
+  year: number
+): number {
+  const memberIncomes = incomeData.filter(
+    (i) => i.familyMemberId === familyMemberId
+  );
 
-export function 年次予測を計算(入力: 計算入力): 年次予測[] {
-  const { 初期資産, 年別月給リスト, 投資利回り, 開始年, 対象年数 } = 入力;
-  const 予測結果: 年次予測[] = [];
+  let totalIncome = 0;
 
-  let 現在資産 = 初期資産;
+  for (const income of memberIncomes) {
+    for (const term of income.terms) {
+      if (year < term.startYear) continue;
+      if (term.endYear && year > term.endYear) continue;
 
-  for (let 年度 = 0; 年度 < 対象年数; 年度++) {
-    const 対象年 = 開始年 + 年度;
+      const yearsElapsed = year - term.startYear;
+      const raiseMultiplier = Math.pow(
+        1 + term.expectedRaiseRate,
+        yearsElapsed
+      );
+      const monthlySalary = term.monthlySalary * raiseMultiplier;
+      const baseSalary = monthlySalary * 12;
+      const bonus = monthlySalary * term.bonusMonths;
 
-    // 対象年の月給・ボーナスを取得（最新の有効な値を使用）
-    const 該当する給与情報 = 年別月給リスト
-      .filter((g) => g.年 <= 対象年)
-      .sort((a, b) => b.年 - a.年)[0];
-
-    if (!該当する給与情報) {
-      throw new Error(`年${対象年}の給与情報が見つかりません`);
+      totalIncome += baseSalary + bonus;
     }
+  }
 
-    const 月給 = 該当する給与情報.月給;
-    const ボーナス額 = 月給 * (該当する給与情報.ボーナス月数 ?? 0);
+  return Math.round(totalIncome);
+}
 
-    const 年間給与 = 月給 * 12;
-    const 年収 = 年間給与 + ボーナス額;
-    const 投資利益 = 現在資産 * 投資利回り;
-    const 支出 = 0; // TODO: ライフイベントと予算から計算
+function getHobbyExpenseForYear(
+  hobbyExpenses: HobbyActivityExpense[],
+  familyMemberId: string,
+  year: number
+): number {
+  const memberExpenses = hobbyExpenses.filter(
+    (h) => h.familyMemberId === familyMemberId
+  );
 
-    現在資産 = 現在資産 + 年収 - 支出 + 投資利益;
+  let totalExpense = 0;
 
-    予測結果.push({
-      年: 対象年,
-      年齢: {}, // TODO: 家族メンバーの生年月日から計算
-      収入: 年収,
-      支出: 支出,
-      投資利益: 投資利益,
-      資産: 現在資産,
-      ライフイベント: [],
+  for (const hobby of memberExpenses) {
+    for (const term of hobby.terms) {
+      if (year < term.startYear) continue;
+      if (term.endYear && year > term.endYear) continue;
+
+      totalExpense += term.monthlyFee * 12;
+    }
+  }
+
+  return totalExpense;
+}
+
+function getAnnualCostsForYear(
+  annualCosts: AnnualCostData[],
+  familyMemberId: string,
+  year: number
+): number {
+  const memberCosts = annualCosts.filter(
+    (c) => c.familyMemberId === familyMemberId
+  );
+
+  let totalCost = 0;
+
+  for (const cost of memberCosts) {
+    for (const item of cost.costs) {
+      if (year < item.startYear) continue;
+      if (item.endYear && year > item.endYear) continue;
+
+      totalCost += item.amount * item.timesPerYear;
+    }
+  }
+
+  return totalCost;
+}
+
+function getLifeEventCostForYear(
+  lifeEvents: LifeEventData[],
+  familyMemberId: string,
+  year: number
+): number {
+  return lifeEvents
+    .filter((e) => e.familyMemberId === familyMemberId && e.eventYear === year)
+    .reduce((sum, e) => sum + e.cost, 0);
+}
+
+function calculateMemberProjection(
+  familyMemberId: string,
+  name: string,
+  birthDate: string,
+  year: number,
+  input: ProjectionInput
+): MemberProjection {
+  const age = calculateAge(birthDate, year);
+  const income = getIncomeForYear(input.incomeData, familyMemberId, year);
+  const hobbyExpense = getHobbyExpenseForYear(
+    input.hobbyExpenses,
+    familyMemberId,
+    year
+  );
+  const annualCosts = getAnnualCostsForYear(
+    input.annualCosts,
+    familyMemberId,
+    year
+  );
+  const lifeEventCost = getLifeEventCostForYear(
+    input.lifeEvents,
+    familyMemberId,
+    year
+  );
+
+  return {
+    familyMemberId,
+    name,
+    age,
+    income,
+    expense: hobbyExpense + annualCosts + lifeEventCost,
+  };
+}
+
+export function calculateYearlyProjections(
+  input: ProjectionInput
+): ProjectionYear[] {
+  const projections: ProjectionYear[] = [];
+  let cumulativeAssets = input.initialAssets;
+
+  const endYear = input.baseYear + input.targetAge;
+
+  for (let year = input.baseYear; year <= endYear; year++) {
+    const members: MemberProjection[] = input.familyMembers.map((member) =>
+      calculateMemberProjection(
+        member.id,
+        member.name,
+        member.birthDate,
+        year,
+        input
+      )
+    );
+
+    const totalIncome = members.reduce((sum, m) => sum + m.income, 0);
+    const totalExpense = members.reduce((sum, m) => sum + m.expense, 0);
+    const yearBalance = totalIncome - totalExpense;
+
+    cumulativeAssets += yearBalance;
+
+    projections.push({
+      year,
+      members,
+      totalIncome,
+      totalExpense,
+      totalAssets: Math.round(cumulativeAssets),
     });
   }
 
-  return 予測結果;
+  return projections;
 }
